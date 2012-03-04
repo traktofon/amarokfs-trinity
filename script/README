@@ -1,0 +1,15 @@
+<div align="center"><h3>AmarokFS Startup Script<br/>
+
+<p><b>About:</b><br/>
+This script simply provides a shortcut for starting AmarokFS ("Amarok Full
+Screen") from within Amarok itself. If multiple X-Screens exist it can get selected on which it will be started.
+</p>
+<p>This script is part of the AmarokFS ubuntu packages</p>
+
+<p><b>Usage:</b><br/>
+When the script is running, you will have an "AmarokFS" menu entry in your playlist popup menu; now simply select "Run AmarokFS ( on Screen #" to activate AmarokFS on the selected screen
+</p>
+
+<p><b>Author:</b><br/>
+Martin Ko&szlig;ler &lt;martin.kossler@students.uni-marburg.de&gt;
+</p>

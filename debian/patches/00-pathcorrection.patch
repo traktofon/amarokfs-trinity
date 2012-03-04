@@ -1,0 +1,189 @@
+--- amfs-xml.cpp.orig	2007-02-13 21:11:09.000000000 +0100
++++ amfs-xml.cpp	2007-02-13 21:11:48.000000000 +0100
+@@ -40,9 +40,9 @@
+ 	//cout << themeCustomPrepath << "\n";
+ 	
+ 	//set the default path
+-	QString themePath = "/usr/local/share/amarokFS/theme.xml";
++	QString themePath = "/usr/share/amarokFS/theme.xml";
+ 	//default prepath for the images directory	
+-	QString themeImagesPrePath = "/usr/local/share/amarokFS/";
++	QString themeImagesPrePath = "/usr/share/amarokFS/";
+ 		
+ 	//if the custom theme file exists, use it, otherwise use the default theme
+ 	if(QFile(themeCustomPath).exists()) {
+@@ -470,7 +470,7 @@
+ 	reflectionPixmap = cdReflected;
+ 	
+ 	QImage gradientImage;
+-	gradientImage.load( "/usr/local/share/amarokFS/images/gradient.png");
++	gradientImage.load( "/usr/share/amarokFS/images/gradient.png");
+ 	gradientImage = gradientImage.scale(reflectionPixmap.width(), 120);
+ 	gradientPixmap = gradientImage;
+ 	gradient->setPixmap(gradientPixmap);
+@@ -511,8 +511,8 @@
+ 		result.load(coverPathDCOPtagcover);
+ 	}
+ 	if (result.isNull()) {
+-		if(transDef == TRUE) result.load("/usr/local/share/amarokFS/images/logoB.png");
+-		else result.load("/usr/local/share/amarokFS/images/logo.png");
++		if(transDef == TRUE) result.load("/usr/share/amarokFS/images/logoB.png");
++		else result.load("/usr/share/amarokFS/images/logo.png");
+ 	}
+ 	return result;
+ 	
+--- Makefile.orig	2007-02-14 00:08:02.000000000 +0100
++++ Makefile	2007-02-14 00:08:32.000000000 +0100
+@@ -16,10 +16,10 @@
+ CXXFLAGS = -pipe -Wall -W -O2 -D_REENTRANT  -DQT_NO_DEBUG -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT
+ LEXFLAGS = 
+ YACCFLAGS= -d
+-INCPATH  = -I/usr/share/qt3/mkspecs/default -I. -I/usr/include/kde -I/usr/local/include/kde -I/usr/include -I/opt/kde3/include -I/opt/kde/include -I/usr/kde/3.5/include -I/usr/include/qt3
++INCPATH  = -I/usr/share/qt3/mkspecs/default -I. -I/usr/include/kde -I/usr/include/kde -I/usr/include -I/opt/kde3/include -I/opt/kde/include -I/usr/kde/3.5/include -I/usr/include/qt3
+ LINK     = g++
+ LFLAGS   = 
+-LIBS     = $(SUBLIBS) -L/usr/share/qt3/lib -L/usr/X11R6/lib -lkdecore -L/opt/kde3/lib -L/usr/local/kde3/lib -L/usr/lib/qt3 -L/opt/kde/lib -L/usr/kde/3.5/lib -lkio -lqt-mt -lXext -lX11 -lm -lpthread
++LIBS     = $(SUBLIBS) -L/usr/share/qt3/lib -L/usr/X11R6/lib -lkdecore -L/opt/kde3/lib -L/usr/kde3/lib -L/usr/lib/qt3 -L/opt/kde/lib -L/usr/kde/3.5/lib -lkio -lqt-mt -lXext -lX11 -lm -lpthread
+ AR       = ar cqs
+ RANLIB   = 
+ MOC      = /usr/share/qt3/bin/moc
+@@ -180,55 +180,55 @@
+ ####### Install
+ 
+ install_target: all 
+-	@$(CHK_DIR_EXISTS) "$(INSTALL_ROOT)/usr/local/bin/" || $(MKDIR) "$(INSTALL_ROOT)/usr/local/bin/"
+-	-$(INSTALL_FILE) "$(QMAKE_TARGET)" "$(INSTALL_ROOT)/usr/local/bin/$(QMAKE_TARGET)"
+-	-strip "$(INSTALL_ROOT)/usr/local/bin/$(QMAKE_TARGET)"
++	@$(CHK_DIR_EXISTS) "$(INSTALL_ROOT)/usr/bin/" || $(MKDIR) "$(INSTALL_ROOT)/usr/bin/"
++	-$(INSTALL_FILE) "$(QMAKE_TARGET)" "$(INSTALL_ROOT)/usr/bin/$(QMAKE_TARGET)"
++	-strip "$(INSTALL_ROOT)/usr/bin/$(QMAKE_TARGET)"
+ 
+ uninstall_target: 
+-	-$(DEL_FILE) "$(INSTALL_ROOT)/usr/local/bin/$(QMAKE_TARGET)"
+-	-$(DEL_DIR) "$(INSTALL_ROOT)/usr/local/bin/"
++	-$(DEL_FILE) "$(INSTALL_ROOT)/usr/bin/$(QMAKE_TARGET)"
++	-$(DEL_DIR) "$(INSTALL_ROOT)/usr/bin/"
+ 
+ 
+ install_images: all 
+-	@$(CHK_DIR_EXISTS) "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/" || $(MKDIR) "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-$(INSTALL_FILE) "images/gradient.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/gradient.png"
+-	-$(INSTALL_FILE) "images/logo.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/logo.png"
+-	-$(INSTALL_FILE) "images/logoB.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/logoB.png"
+-	-$(INSTALL_FILE) "images/player_end.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-$(INSTALL_FILE) "images/player_end2.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_end2.png"
+-	-$(INSTALL_FILE) "images/player_pause.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-$(INSTALL_FILE) "images/player_pause2.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_pause2.png"
+-	-$(INSTALL_FILE) "images/player_play.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-$(INSTALL_FILE) "images/player_play2.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_play2.png"
+-	-$(INSTALL_FILE) "images/player_start.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-$(INSTALL_FILE) "images/player_start2.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_start2.png"
+-	-$(INSTALL_FILE) "images/player_stop.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-$(INSTALL_FILE) "images/player_stop2.png" "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
+-	-strip "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_stop2.png"
++	@$(CHK_DIR_EXISTS) "$(INSTALL_ROOT)/usr/share/amarokFS/images/" || $(MKDIR) "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-$(INSTALL_FILE) "images/gradient.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/gradient.png"
++	-$(INSTALL_FILE) "images/logo.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/logo.png"
++	-$(INSTALL_FILE) "images/logoB.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/logoB.png"
++	-$(INSTALL_FILE) "images/player_end.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-$(INSTALL_FILE) "images/player_end2.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_end2.png"
++	-$(INSTALL_FILE) "images/player_pause.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-$(INSTALL_FILE) "images/player_pause2.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_pause2.png"
++	-$(INSTALL_FILE) "images/player_play.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-$(INSTALL_FILE) "images/player_play2.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_play2.png"
++	-$(INSTALL_FILE) "images/player_start.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-$(INSTALL_FILE) "images/player_start2.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_start2.png"
++	-$(INSTALL_FILE) "images/player_stop.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-$(INSTALL_FILE) "images/player_stop2.png" "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
++	-strip "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_stop2.png"
+ 
+ 
+ uninstall_images: 
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/gradient.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/logo.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/logoB.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_end.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_end2.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_pause.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_pause2.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_play.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_play2.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_start.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_start2.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_stop.png"
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/player_stop2.png"
+-	-$(DEL_DIR) "$(INSTALL_ROOT)/usr/local/share/amarokFS/images/"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/gradient.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/logo.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/logoB.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_end.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_end2.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_pause.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_pause2.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_play.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_play2.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_start.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_start2.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_stop.png"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/images/player_stop2.png"
++	-$(DEL_DIR) "$(INSTALL_ROOT)/usr/share/amarokFS/images/"
+ 
+ 
+ install_desktop: all 
+@@ -253,13 +253,13 @@
+ 
+ 
+ install_defaultTheme: all 
+-	@$(CHK_DIR_EXISTS) "$(INSTALL_ROOT)/usr/local/share/amarokFS/" || $(MKDIR) "$(INSTALL_ROOT)/usr/local/share/amarokFS/"
+-	-$(INSTALL_FILE) "theme.xml" "$(INSTALL_ROOT)/usr/local/share/amarokFS/"
++	@$(CHK_DIR_EXISTS) "$(INSTALL_ROOT)/usr/share/amarokFS/" || $(MKDIR) "$(INSTALL_ROOT)/usr/share/amarokFS/"
++	-$(INSTALL_FILE) "theme.xml" "$(INSTALL_ROOT)/usr/share/amarokFS/"
+ 
+ 
+ uninstall_defaultTheme: 
+-	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/local/share/amarokFS/theme.xml"
+-	-$(DEL_DIR) "$(INSTALL_ROOT)/usr/local/share/amarokFS/"
++	-$(DEL_FILE) -r "$(INSTALL_ROOT)/usr/share/amarokFS/theme.xml"
++	-$(DEL_DIR) "$(INSTALL_ROOT)/usr/share/amarokFS/"
+ 
+ 
+ install_docs: all 
+--- README.orig	2007-02-28 17:21:42.000000000 +0100
++++ README	2007-02-28 17:25:41.000000000 +0100
+@@ -5,19 +5,12 @@
+ 
+ INSTALL:
+ 	
+-	To build the program you need qt3 and kde development files (they usualy come as packages for you distribution).
+-	Run "make" in this directory.
+-	If the compile proces fails, try running "qmake" first and then "make".
+-	For installation run "make install" (requires root priviliges)
+-	
+-	Executable is installed into /usr/local/bin, 
+-	default theme + its images into /usr/local/share/amarokFS, 
+-	icon into /usr/share/icons 
+-	and the .desktop file into /usr/share/applications
++	Executable is installed into /usr/bin, 
++	default theme + its images into /usr/share/amarokFS, 
+ 
+ THEMES:
+ 	The theme can be chosen by the button in the upper left corner (which hides automaticaly).
+-	If no theme is selected (or the selected theme is not readable) the default theme is used (/usr/local/share/amarokFS/theme.xml).
++	If no theme is selected (or the selected theme is not readable) the default theme is used (/usr/share/amarokFS/theme.xml).
+ 
+ 	If you want to write your own skins please read the instructions in theme-howto.txt.
+ 

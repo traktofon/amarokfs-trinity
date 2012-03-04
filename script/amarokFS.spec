@@ -1,0 +1,2 @@
+name = AmarokFS
+type = generic

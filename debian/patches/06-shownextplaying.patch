@@ -1,0 +1,162 @@
+diff -u amarokfs-0.4.2.orig/amfs-xml.cpp amarokfs-0.4.2/amfs-xml.cpp
+--- amarokfs-0.4.2.orig/amfs-xml.cpp	2007-03-01 17:53:06.000000000 +0100
++++ amarokfs-0.4.2/amfs-xml.cpp	2007-03-02 01:03:52.000000000 +0100
+@@ -310,6 +311,43 @@
+ 				gradient->setPixmap(gradientPixmap);
+ 				gradient->move(x + leftOffset, y + topOffset);
+ 			}
++
++			//parse a list of next playing songs and its settings
++			if(akfswidget.nodeName() == "nextPlaying") {
++				int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0, fontSize = 10, fontWeight = 50, align = 0, valign = 0, trackCount = 1;
++				QString fontFace, introduction, format;
++				subnode = node.firstChild();
++				while ( !subnode.isNull() ) {
++					if ( subnode.isElement() ) {
++						QDomElement elem = subnode.toElement();
++						if(subnode.nodeName() == "x") x = elem.text().toInt();
++						if(subnode.nodeName() == "y") y = elem.text().toInt();
++						if(subnode.nodeName() == "w") w = elem.text().toInt();
++						if(subnode.nodeName() == "h") h = elem.text().toInt();
++						if(subnode.nodeName() == "introduction") introduction = elem.text();
++						if(subnode.nodeName() == "format") format = elem.text();
++						if(subnode.nodeName() == "trackCount") trackCount = elem.text().toInt();
++						if(subnode.nodeName() == "fontR") r = elem.text().toInt();
++						if(subnode.nodeName() == "fontG") g = elem.text().toInt();
++						if(subnode.nodeName() == "fontB") b = elem.text().toInt();
++						if(subnode.nodeName() == "fontSize") fontSize = elem.text().toInt();
++						if(subnode.nodeName() == "fontWeight") fontWeight = elem.text().toInt();
++						if(subnode.nodeName() == "fontFace") fontFace = elem.text();
++						if(subnode.nodeName() == "valign") valign = elem.text().toInt();
++						if(subnode.nodeName() == "align") align = elem.text().toInt();
++					}
++					subnode = subnode.nextSibling();
++				}
++				nextSongs = new QLabel(this, "nextSong");
++				nextSongCount = trackCount;
++				nextSongIntroduction = introduction;
++				nextSongFormat = format;
++				nextSongs->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
++				nextSongs->setFont(QFont::QFont(fontFace, fontSize, fontWeight, FALSE));
++				nextSongs->setAlignment(align | valign | Qt::WordBreak);
++				nextSongs->setPaletteForegroundColor(QColor::QColor(r, g, b));
++				nextSongs->setText(introduction);
++			}
+ 	
+ 		}
+ 		node = node.nextSibling();
+@@ -418,7 +456,7 @@
+ 		//if there is a cdcover it has to be updated
+ 		if(cdcover != (QLabel *) 0 ) updateCover();
+ 		if(gradient != (QLabel *) 0 ) updateGradient();
+-		
++		if(nextSongs != (QLabel *) 0 ) updateNextSongs();
+ 	}
+ 	
+ }
+@@ -478,6 +516,52 @@
+ 	gradient->resize(reflectionPixmap.width(), 120);
+ }
+ 
++void AmfsXML::updateNextSongs() {
++	// Get Playlist file name and position
++	QByteArray dcopReplyData;
++	
++	QString playlistFileName;
++	dcopClient->call("amarok", "playlist", "saveCurrentPlaylist()",
++		(QByteArray) 0, *(new QCString) , dcopReplyData);
++	*(new QDataStream (dcopReplyData, IO_ReadOnly)) >> playlistFileName;
++
++	int playlistPosition;	
++	dcopClient->call("amarok", "playlist", "getActiveIndex()",
++		(QByteArray) 0, *(new QCString) , dcopReplyData);
++	*(new QDataStream (dcopReplyData, IO_ReadOnly)) >> playlistPosition;
++
++	QFile playlistFile( playlistFileName );
++	if ( !playlistFile.open( IO_ReadOnly ) ) {
++		cout << "Error\nCannot open playlist file \n";
++		return;
++	}
++	if ( !domTree.setContent( &playlistFile ) ) {
++		cout << "Error\nCannot parse playlist file \n";
++		playlistFile.close();
++		return;
++	}
++	playlistFile.close();
++	
++	// Parse playlist for next songs
++	QDomElement root = domTree.documentElement();
++	QDomNode node = root.firstChild();
++	QString nextSongList = nextSongIntroduction;
++	for(int i = 0; i <= playlistPosition + nextSongCount && !node.isNull(); i++) {
++		if(i > playlistPosition && node.isElement()) {
++			// Bring information to format specified by theme
++			QString append = nextSongFormat;
++			QRegExp rx( "%(.+)%" );
++			// Replace Placeholders			
++			rx.setMinimal(TRUE); 
++			while(rx.search(append) != -1)
++				append.replace(rx.cap(0), node.toElement().elementsByTagName(rx.cap(1)).item(0).toElement().text());
++			nextSongList += "\n" + append;
++		}
++		node = node.nextSibling();
++	}
++	nextSongs->setText(nextSongList);
++
++}
+ 
+ QImage AmfsXML::getCoverPath(QString artist, QString album, bool transDef) {
+ 	QString coverPathQuery = "select path from images where artist='" + artist + "' and album='" + album + "'";
+diff -u amarokfs-0.4.2.orig/amfs-xml.h amarokfs-0.4.2/amfs-xml.h
+--- amarokfs-0.4.2.orig/amfs-xml.h	2007-03-01 17:53:06.000000000 +0100
++++ amarokfs-0.4.2/amfs-xml.h	2007-03-02 00:32:38.000000000 +0100
+@@ -74,4 +74,7 @@
+ 	AKLabelCommand *lInstant, *lTrack, *lStatic;
+ 	QString nowPlaying;
++	QString nextSongIntroduction, nextSongFormat;
++	QLabel *nextSongs;
++	int nextSongCount;
+ 	
+ 	AmarokFS_config *configWindow;
+@@ -86,5 +86,6 @@
+ private slots:
+ 	void updateTime();
++	void updateNextSongs();
+ 	void controlButtonClicked(QCString command);
+ 	void launchConfig();
+ 	void hideHint();
+diff -u amarokfs-0.4.2.orig/theme-howto.txt amarokfs-0.4.2/theme-howto.txt
+--- amarokfs-0.4.2.orig/theme-howto.txt	2007-03-01 17:53:06.000000000 +0100
++++ amarokfs-0.4.2/theme-howto.txt	2007-03-02 01:04:54.000000000 +0100
+@@ -44,3 +44,8 @@
+ 
+ 6) The "reflection" element - only one can be used; the size is fixed at 300x120 (but will be probably flexible in the future); the reflection look only good when the background color is set to black; subelements:
+   a) "x" and "y" define the position
++
++7) The nextPlayingElement creates a list of the next songs in the playlist - only one can be used; Its format settings are similar to the labels. Other subelements are:
++  a) "introduction" defines a text which stands at the first line, in front of the song-information
++  b) "format" defines how each song should get formatted. All text between two percent signs will be (case sensitive!) replaced with the according information. E.g. "%Artist%" will be replaced by the artist information. For possible strings look at the xml file referred by "dcop amarok playlist saveCurrentPlaylist"
++  c) "trackCount" defines how much of the following tracks should be shown (if existing)
+diff -u amarokfs-0.4.2.orig/theme.xml amarokfs-0.4.2/theme.xml
+--- amarokfs-0.4.2.orig/theme.xml	2007-03-01 17:53:06.000000000 +0100
++++ amarokfs-0.4.2/theme.xml	2007-03-02 01:04:06.000000000 +0100
+@@ -117,2 +117,19 @@
+ 	</progressbar>
++	<nextPlaying>
++		<x>50</x>
++		<y>665</y>
++		<w>924</w>
++		<h>100</h>
++		<introduction>Next Playing:</introduction>
++		<format>%Artist% - %Title%</format>
++		<trackCount>3</trackCount>
++		<fontR>200</fontR>
++		<fontG>200</fontG>
++		<fontB>200</fontB>
++		<fontSize>12</fontSize>
++		<fontFace>Decorative</fontFace>
++		<fontWeight>20</fontWeight>
++		<align>1</align>
++		<valign>16</valign>
++	</nextPlaying>
+ 	<labelInstant>

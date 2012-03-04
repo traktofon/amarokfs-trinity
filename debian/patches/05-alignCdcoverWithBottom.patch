@@ -1,0 +1,31 @@
+diff -u amarokfs-0.4.2.orig/amfs-xml.cpp amarokfs-0.4.2/amfs-xml.cpp
+--- amarokfs-0.4.2.orig/amfs-xml.cpp	2007-02-15 19:38:25.000000000 +0100
++++ amarokfs-0.4.2/amfs-xml.cpp	2007-02-20 20:23:18.000000000 +0100
+@@ -287,6 +287,8 @@
+ 				cdcover->setPixmap(cdimagePixmap);
+ 				cdcover->resize(300, 300);
+ 				cdcover->move(x + leftOffset, y + topOffset);
++				cdcoverPosX = x + leftOffset;
++				cdcoverPosY = y + topOffset;
+ 			}
+ 			
+ 			//parse a cd-reflection
+@@ -456,6 +458,7 @@
+ 	cdimagePixmap = cdcoverImage;
+ 	cdcover->setPixmap(cdimagePixmap);
++	cdcover->move(cdcoverPosX,cdcoverPosY + 300 - cdimagePixmap.height());
+ 	cdcover->resize(cdimagePixmap.width(), cdimagePixmap.height());
+ }
+ 
+ void AmfsXML::updateGradient() {
+diff -u amarokfs-0.4.2.orig/amfs-xml.h amarokfs-0.4.2/amfs-xml.h
+--- amarokfs-0.4.2.orig/amfs-xml.h	2007-02-15 19:38:25.000000000 +0100
++++ amarokfs-0.4.2/amfs-xml.h	2007-02-20 20:22:52.000000000 +0100
+@@ -75,6 +75,7 @@
+ 	DCOPClient* dcopClient;
+ 	QProgressBar* progressBar;
+ 	QLabel *cdcover, *gradient, *themeHint;
++	int cdcoverPosX, cdcoverPosY;
+ 	QPixmap cdimagePixmap, reflectionPixmap, gradientPixmap;
+ 	QTimer* timer, *hintTimer;
+ 	AKLabelCommand *lInstant, *lTrack, *lStatic;

@@ -1,0 +1,70 @@
+Amarok Full Screen GUI
+		 
+You need Amarok running. For any information about the player itseft, please visit amarok.kde.org
+For quit press Esc or Alt+F4
+
+INSTALL:
+	
+	Executable is installed into /usr/bin, 
+	default theme + its images into /usr/share/amarokFS, 
+
+THEMES:
+	The theme can be chosen by the button in the upper left corner (which hides automaticaly).
+	If no theme is selected (or the selected theme is not readable) the default theme is used (/usr/share/amarokFS/theme.xml).
+
+	If you want to write your own skins please read the instructions in theme-howto.txt.
+
+CHANGELOG:
+	0.1: first release
+	
+	0.2:
+		ESC for Exit
+		fancy reflection
+	
+	0.2.1:
+		made Makefile more compatible with other distros
+	
+	0.3:
+		new methods for searching cover images
+		Makefile now supports "make install"
+	
+	0.4:
+		initial THEME SUPPORT!!
+		mouse wheel for volume control
+		updated Makefile (should work on gentoo now)
+
+	0.4.1:
+		gui dialog to choose the theme
+		new themable elements
+
+	0.4.2:
+		disabling screen saver (optional)
+		
+	0.5:
+		many fixes and updates by Martin Kossler - thanks a lot!
+		better progessbar
+		new element - labelPixmap
+		new element - nextPlaying
+		context menu instead of settings button
+		mouse hiding
+		added amarok script 
+				
+Copyright (C) 2007 Jan Zarnikov <jan.zarnikov@gmail.com>
+		Martin Kossler <martin.kossler@students.uni-marburg.de> 
+
+	This file is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public License
+	along with this library; see the file COPYING.LIB.  If not, write to
+	the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+	Boston, MA 02110-1301, USA.
+
+		

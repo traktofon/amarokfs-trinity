@@ -1,0 +1,58 @@
+Howto create your own themes for amarokFS:
+		
+WARNING: this project is still in development and the xml-structure will change. It will take some time before the it settles down.
+		
+Notes:
+1) The themes are writen in XML. This might look like HTML but it is NOT THE SAME!
+2) By default all values are 0 or "" (empty string). Because of this, the default background color is R=0 B=0 G=0 (black) and the default font color is also R=0 B=0 G=0 (black). You have to set manualy either the background color or the color of the text elements! Otherwise you will not see any text (even it might be there).
+3) The file names of the image files must be RELATIVE TO THE THEME FILE.
+
+
+And now to the specifications:
+1) The root Element <amarokFS> defines the themes. Possible attributes are themeWidth and themeHeight, bgcolorR, bgcolorG=, bgcolorB. Attributes are:
+  a) "themeWidth" and "themeHeight" define a rectangle in which the theme is drawn. This rectange is then positioned to be in the middle of the screen. For example if you are using monitor resolution 1600x1200 and the theme is 1024x768, the theme will be in the center surrounded by empty space (background color). All coordinates x and y of the elements are WITHIN THE THEME COORDINATES. In our example the point x=512 and y=384 will be in the middle of the screen regardless the monitor resolution.
+  b) "bgcolorR", "bgcolorG", "bgcolorB" define the background color. The values are 0-255;
+
+2) The "button" Element defines a clickable button that can run amarok-dcop command. It has folowing subelements:
+  a) "x" and "y" define the position
+  b) "w" and "h" define width and height
+  c) "path" defines the path to the image to be displayed in normal state
+  d) "clicked" defines the path to the image to be displayed you press the button
+  e) "command" defines the dcop-function to be called. To see available functions run "kdcop", open amarok/player. Only function without any arguments can be called.
+  
+3) The "labelTrack" Element defines a text-label. Its contet changes with every track change. It has folowing subelements:
+  a) "x" and "y" define the position
+  b) "w" and "h" define width and height
+  c) "command" defines the dcop-function to be called to get the text value. To see available functions run "kdcop", open amarok/player. Only function without any arguments and returning a QString can be called.
+  d) "ignore" defines a regular Expression which matches these results of the dcop-call which will be ignored; more infos about the possible expressions at http://doc.trolltech.com/3.3/qregexp.html#regular-expression
+  e) "defaultText" defines the text which replaces the dcop-results matching the "ignore"-Expression
+  f) "fontSize" (default 12) and "fontWeight" (default 50) define the font appearence;
+  g) "fontFace" defines the font. Possible values are: Helvetica, SansSerif = Helvetica, Times, Serif = Times, Courier, TypeWriter = Courier, OldEnglish, Decorative = OldEnglish, System, AnyStyle
+  h) "fontR", "fontG", "fontB" define the font color. The values are 0-255;
+  i) "align" defines horizontal alignment, values are: 0 for auto, 1 for left, 2 for right, 4 for center and 5 for justify;
+  j) "valign" defines vertical alignment, values are: 16 for top, 32 for bottom, 64 for center
+
+4) The "labelInstant" Element defines a text-label similar to trackLabel. The only difference is that it changes every second. It has the same subelements as "labelTrack".
+
+5) The "labelStatic" Element defines a text-label similar to trackLabel. The only difference is that it never changes. It has the same subelements as "labelTrack" except:
+  a) "text" determines the content (and "command" is ignored)
+		
+6) The "labelPixmap" Element defines an picture element, it is something between "button" and "labelStatic" - it uses a picture but does nothing and doesn't change:
+  a) "x" and "y" define the position
+  b) "w" and "h" define width and height
+  c) "path" the filename of the picture to be used
+
+7) The "progressbar" element - only one can be used, subelements:
+  a) "x" and "y" define the position
+  b) "w" and "h" define width and height
+
+8) The "cdcover" element - only one can be used; the size is fixed at 300x300 (but will be probably flexible in the future); subelements:
+  a) "x" and "y" define the position
+
+9) The "reflection" element - only one can be used; the size is fixed at 300x120 (but will be probably flexible in the future); the reflection look only good when the background color is set to black; subelements:
+  a) "x" and "y" define the position
+
+10) The nextPlayingElement creates a list of the next songs in the playlist - only one can be used; Its format settings are similar to the labels. Other subelements are:
+  a) "introduction" defines a text which stands at the first line, in front of the song-information
+  b) "format" defines how each song should get formatted. All text between two percent signs will be (case sensitive!) replaced with the according information. E.g. "%Artist%" will be replaced by the artist information. For possible strings look at the xml file referred by "dcop amarok playlist saveCurrentPlaylist"
+  c) "trackCount" defines how much of the following tracks should be shown (if existing)

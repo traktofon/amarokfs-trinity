@@ -1,0 +1,17 @@
+[Desktop Entry]
+Comment=
+Comment[en_US]=
+Encoding=UTF-8
+Exec=amarokFS
+GenericName=Full screen mode for the Amarok player
+GenericName[en_US]=Full screen mode for the Amarok player
+Icon=/usr/share/icons/amarokFS.png
+MimeType=
+Name=Amarok Full Screen
+Name[en_US]=Amarok Full Screen
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Categories=Application;AudioVideo;Player;

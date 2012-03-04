@@ -1,0 +1,232 @@
+Author: Martin Kossler <martin.kossler@students.uni-marburg.de>
+Adding the ability to disable the hint at startup and the Amarok-OSD while amarokFS running
+Based on AddDisableAmarokOSD.patch by Buschmann <buschmann (at) huessenbergnetz.de>
+EDIT: Added Layout patch from fedora cvs
+--- amarokfs-0.4.2.orig/amarokfs_config.cpp	2007-02-28 17:00:16.000000000 +0100
++++ amarokfs-0.4.2/amarokfs_config.cpp	2007-02-28 17:05:44.000000000 +0100
+@@ -47,31 +47,55 @@
+ 		setName( "amarokFS_config" );
+ 	
+ 	setCaption("amarokFS Config" );
+-	
++
++	QVBoxLayout *configLayout = new QVBoxLayout( this, 11, 6, "configLayout" );
++
++	QHBoxLayout *themeLayout = new QHBoxLayout( 0, 0, 6, "themeLayout" );
+ 	textLabel1 = new QLabel( this, "textLabel1" );
+ 	textLabel1->setGeometry( QRect( 10, 10, 50, 20 ) );
+ 	textLabel1->setText( "Theme:" );
++	themeLayout->addWidget(textLabel1);
+ 	kURLRequester1 = new KURLRequester( this, "kURLRequester1" );
+ 	kURLRequester1->setGeometry( QRect( 60, 0, 311, 41 ) );
+ 	kURLRequester1->setFilter( "*.xml|xml Theme Files" );
+-	
++	themeLayout->addWidget( kURLRequester1 );
++	configLayout->addLayout(themeLayout);
++
+ 	disScrSvr = new QCheckBox(this, "disScrSvr");
+ 	disScrSvr->setText("Disable screen saver");
+ 	disScrSvr->setGeometry( QRect(10, 40, 250, 20) );
++	configLayout->addWidget( disScrSvr );
+ 	
++	disAmaOSD = new QCheckBox(this, "disAmaOSD");
++	disAmaOSD->setText("Disable Amarok OSD");
++	disAmaOSD->setGeometry( QRect(10, 60, 250, 20) );
++	configLayout->addWidget( disAmaOSD );
++
++	disThemeHint = new QCheckBox(this, "disAmaOSD");
++	disThemeHint->setText("Disable hint at startup");
++	disThemeHint->setGeometry( QRect(10, 80, 250, 20) );
++	configLayout->addWidget( disThemeHint );
++		
+ 	textLabel2 = new QLabel( this, "textLabel2" );
+-	textLabel2->setGeometry( QRect( 10, 70, 371, 20 ) );
++	textLabel2->setGeometry( QRect( 10, 110, 371, 20 ) );
+ 	textLabel2->setText("New settings will be applied after restarting the application." ) ;
+-	
++	configLayout->addWidget( textLabel2 );
++
++	QHBoxLayout *buttonLayout = new QHBoxLayout( 0, 0, 6, "buttonLayout" );
++	QSpacerItem *buttonSpacer = new QSpacerItem( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
++	buttonLayout->addItem( buttonSpacer );
++
+ 	okButton = new QPushButton( this, "ok" );
+-	okButton->setGeometry( QRect( 211, 90, 80, 30 ) );
++	okButton->setGeometry( QRect( 211, 130, 80, 30 ) );
+ 	okButton->setText( "OK" );
+-	
++	buttonLayout->addWidget( okButton );
++
+ 	cancelButton = new QPushButton( this, "cancel" );
+-	cancelButton->setGeometry( QRect( 300, 90, 80, 30 ) );
++	cancelButton->setGeometry( QRect( 300, 130, 80, 30 ) );
+ 	cancelButton->setText( "Cancel" );
++	buttonLayout->addWidget( cancelButton );
+ 	
+-	resize( QSize(390, 130).expandedTo(minimumSizeHint()) );
++	configLayout->addLayout( buttonLayout );
+ 	
+ 	
+ 	kapp->config()->setGroup ("Theme");
+@@ -82,7 +106,10 @@
+ 	kapp->config()->setGroup ("Settings");
+ 	isSetDisScrSvr =  (bool) ((kapp->config()->readEntry ("DisableScreenSaver", "0")).toInt());
+ 	disScrSvr->setChecked(isSetDisScrSvr);
+-
++	isSetDisAmaOSD =  (bool) ((kapp->config()->readEntry ("DisableAmarokOSD", "0")).toInt());
++	disAmaOSD->setChecked(isSetDisAmaOSD);
++	isSetDisThemeHint =  (bool) ((kapp->config()->readEntry ("DisableThemeHint", "0")).toInt());
++	disThemeHint->setChecked(isSetDisThemeHint);
+ 	
+ 	clearWState( WState_Polished );
+ 	connect( okButton, SIGNAL(clicked()), this, SLOT(saveData()) );
+@@ -90,6 +117,8 @@
+ 	connect( kURLRequester1, SIGNAL(textChanged(const QString &)), this, SLOT(dataChange(const QString &)) );
+ 	connect( kURLRequester1, SIGNAL(urlSelected(const QString &)), this, SLOT(dataChange(const QString &)) );
+ 	connect( disScrSvr, SIGNAL(stateChanged(int)), this, SLOT(scrSvrChanged(int)) );
++	connect( disAmaOSD, SIGNAL(stateChanged(int)), this, SLOT(amaOSDChanged(int)) );
++	connect( disThemeHint, SIGNAL(stateChanged(int)), this, SLOT(themeHintChanged(int)) );
+ }
+ 
+ void AmarokFS_config::saveData() {
+@@ -97,6 +126,8 @@
+ 	kapp->config()->writeEntry ("KUrl", themeKUrl);
+ 	kapp->config()->setGroup ("Settings");
+ 	kapp->config()->writeEntry ("DisableScreenSaver", (int) isSetDisScrSvr);
++	kapp->config()->writeEntry ("DisableAmarokOSD", (int) isSetDisAmaOSD);
++	kapp->config()->writeEntry ("DisableThemeHint", (int) isSetDisThemeHint);
+ 	kapp->config()->sync();
+ 	close();
+ }
+@@ -108,7 +139,14 @@
+ void AmarokFS_config::scrSvrChanged(int state) {
+ 	//cout << state << endl;
+ 	isSetDisScrSvr =  (bool) state;
+-	
++}
++
++void AmarokFS_config::amaOSDChanged(int state) {
++	isSetDisAmaOSD =  (bool) state;
++}
++
++void AmarokFS_config::themeHintChanged(int state) {
++	isSetDisThemeHint =  (bool) state;
+ }
+ 
+ /*
+--- amarokfs-0.4.2.orig/amarokfs_config.h	2007-02-14 14:43:28.000000000 +0100
++++ amarokfs-0.4.2/amarokfs_config.h	2007-02-14 14:48:23.000000000 +0100
+@@ -43,14 +43,20 @@
+ 	QPushButton* okButton;
+ 	QPushButton* cancelButton;
+ 	QCheckBox *disScrSvr;
++	QCheckBox *disAmaOSD;
++	QCheckBox *disThemeHint;
+ 	
+ 	bool isSetDisScrSvr;
++	bool isSetDisAmaOSD;
++	bool isSetDisThemeHint;
+ 	
+ 	
+ private slots:
+ 	void saveData();
+ 	void dataChange(const QString & newKUrl);
+ 	void scrSvrChanged(int state);
++	void amaOSDChanged(int state);
++	void themeHintChanged(int state);
+ };
+ 
+ #endif // AMAROKFS_CONFIG_H
+--- amarokfs-0.4.2.orig/amfs-xml.cpp	2007-02-14 14:43:28.000000000 +0100
++++ amarokfs-0.4.2/amfs-xml.cpp	2007-02-14 14:55:43.000000000 +0100
+@@ -28,6 +28,8 @@
+ 	//read the setting whether the user wants to disable the screensaver
+ 	kapp->config()->setGroup ("Settings");
+ 	isSetDisScrSvr =  (bool) ((kapp->config()->readEntry ("DisableScreenSaver", "0")).toInt());
++	isSetDisAmaOSD =  (bool) ((kapp->config()->readEntry ("DisableAmarokOSD", "0")).toInt());
++	isSetDisThemeHint =  (bool) ((kapp->config()->readEntry ("DisableThemeHint", "0")).toInt());
+ 	
+ 	//load the path from user theme
+ 	kapp->config()->setGroup ("Theme");
+@@ -106,12 +108,13 @@
+ 	setupButton->setText("Settings");
+ 	setupButton->setGeometry(QRect(0, 0, 100, 30));
+ 	
+-	
++	if(!isSetDisThemeHint) {
+ 	themeHint = new QLabel(this, "themeHint", 0);
+ 	themeHint->setText("<- to change the settings move your mouse to the upper left corner");
+ 	themeHint->setGeometry(110, 0, 650, 25);
+ 	themeHint->setPaletteForegroundColor(QColor::QColor(255, 255, 255));
+ 	themeHint->setFont(QFont::QFont("System", 13, 50, FALSE));
++	}
+ 	
+ 	QDomNode node, subnode;
+ 	QDomElement akfswidget;
+@@ -326,7 +329,15 @@
+ 		if (!dcopClient->send("kdesktop", "KScreensaverIface", "enable(bool)", data))
+ 			qDebug("there was some error in disabling the KScreensaver.");
+ 	}
+-
++	
++	//disable Amarok OSD (if the user wants it)
++	if (isSetDisAmaOSD) {
++		QByteArray data;
++		QDataStream arg(data, IO_WriteOnly);
++		arg << false;
++		if (!dcopClient->send("amarok", "player", "enableOSD(bool)", data))
++			qDebug("there was some error in disabling the Amarok OSD.");
++	}
+ 	
+ 	timer = new QTimer( this );
+ 	connect( timer, SIGNAL(timeout()), this, SLOT(updateTime()) );
+@@ -357,10 +368,21 @@
+ 	cout << "Screen saver restored\n";
+ }
+ 
++void AmfsXML::restoreAmarokOSD() {
++	QByteArray data;
++	QDataStream arg(data, IO_WriteOnly);
++	arg << true;
++	if (!dcopClient->send("amarok", "player", "enableOSD(bool)", data))
++		qDebug("there was some error in enabling the Amarok OSD.");
++	cout << "Amarok OSD restored\n";
++}
++
+ void AmfsXML::closeEvent( QCloseEvent* ce )
+ {
+ 	//restore the screen saver if it was disabled
+ 	if(isSetDisScrSvr) restoreScreenSaver();
++	//restore OSD if it was disabled
++	if(isSetDisAmaOSD) restoreAmarokOSD();
+         ce->accept();
+         return;
+ }
+@@ -390,7 +411,8 @@
+ }
+ 
+ void AmfsXML::hideHint() {
++	if(!isSetDisThemeHint)		
+ 	themeHint->hide();
+ 	setupButton->hide();
+ }
+ 
+--- amarokfs-0.4.2.orig/amfs-xml.h	2007-02-14 14:43:28.000000000 +0100
++++ amarokfs-0.4.2/amfs-xml.h	2007-02-14 14:56:22.000000000 +0100
+@@ -47,6 +47,7 @@
+ 	void sendPlayerCommand(QCString command);
+ 	QImage getCoverPath(QString artist, QString album, bool transDef=FALSE);
+ 	void restoreScreenSaver();
++	void restoreAmarokOSD();
+ 	
+ 	void updateTrackLabels();
+ 	void updateInstantLabels();
+@@ -61,6 +62,8 @@
+ 			
+ 	int topOffset, leftOffset;
+ 	bool isSetDisScrSvr;
++	bool isSetDisAmaOSD;
++	bool isSetDisThemeHint;
+ 	
+ 	//vector to store the buttons;
+ 	std::vector<AKControlButton*> controlButtons;

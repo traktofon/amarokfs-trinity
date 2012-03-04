@@ -1,0 +1,84 @@
+amarokfs (0.4.2-9) unstable; urgency=low
+
+  * mouse cursor will not hide when contextmenu or dialog shows up
+
+ -- Martin Koßler <martin.kossler@students.uni-marburg.de>  Sun, 18 Mar 2007 23:23:06 +0100
+
+amarokfs (0.4.2-8) unstable; urgency=low
+
+  * added application icon
+  * added about information
+  * added command line options:
+    + show config dialog
+    + kiosk-mode: disable settings entry in context menu
+  * config dialog is accessible from Amarok script management
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Thu, 15 Mar 2007 17:35:19 +0100
+
+amarokfs (0.4.2-7) unstable; urgency=low
+
+  * mouse cursor will hide after five seconds
+  * added contextmenu instead of settings button containing reload function
+    for nextPlaying element
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Mon, 12 Mar 2007 01:38:20 +0100
+
+amarokfs (0.4.2-6) unstable; urgency=low
+
+  * Added List of next Songs in playlist. This is to be activated in the theme
+    through the new nextPlaying element
+  * Fixed Amarok-Script so that it will show multiple menu options only if
+    more than one X-Screen exists
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Fri,  2 Mar 2007 19:23:38 +0100
+
+amarokfs (0.4.2-5) unstable; urgency=low
+
+  * progressbar now changes every second
+  * theme fix: pause button now triggers playPause
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Thu,  1 Mar 2007 17:50:09 +0100
+
+amarokfs (0.4.2-4) unstable; urgency=low
+
+  * Config Dialog Layout patched with code from fedora cvs
+  * fixed typos in theme-howto.txt
+  * Updated paths in Readme 
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Wed, 28 Feb 2007 17:27:32 +0100
+
+amarokfs (0.4.2-3) unstable; urgency=low
+
+  * better gradient.png (svg with radial gradient converted to png)
+  * If Cover is less than 300px high it will be aligned at the bottom to avoid
+    the gap between cover and reflection
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Wed, 21 Feb 2007 18:04:10 +0100
+
+amarokfs (0.4.2-2) unstable; urgency=low
+
+  * the patch for ignoring stupid dcop-results only worked for trackLabel, now
+    for instantLabel too.
+  * positioning fix on standard theme
+  * better multi-screen-hack (but not right optimal)
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Thu, 15 Feb 2007 19:28:42 +0100
+
+amarokfs (0.4.2-1) unstable; urgency=low
+
+  * Version 0.4.2 from kde-apps.de by Jan Zarnikov <jan.zarnikov@gmail.com>
+  * patched to use common ubuntu-paths (/usr/ instead of /usr/local/)
+  * Added and modfied patch that allows to disable the OSD while running
+    amarokFS (original posted to the comments at kde-apps.de by Matthias
+    Fehring) and to disable the hint shown at startup.
+  * Patch to the cover-extractor - now the correct cover is chosen independent
+    from the size of the cover-preview
+  * Fixed behavior on dual-screen setup: The setting button won't show up any
+    more when mouse is on second screen.
+  * uses modified isimplydark-theme as standard
+  * Added amarok-script so that we are able to access amarokFS from
+    within amarok. So the desktopmenu entry can also get removed.
+  * Added xml-tag for theme-file which allows to supress stupid dcop-results.
+    Instead a defaultText can be defined.
+
+ -- Martin Kossler <martin.kossler@students.uni-marburg.de>  Wed, 14 Feb 2007 19:15:31 +0100

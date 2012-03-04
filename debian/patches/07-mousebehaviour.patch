@@ -1,0 +1,152 @@
+--- amfs-xml.h.orig	2007-03-11 22:55:51.000000000 +0100
++++ amfs-xml.h	2007-03-11 22:56:35.000000000 +0100
+@@ -20,6 +20,8 @@
+ #include <qstring.h>
+ #include <qimage.h>
+ #include <qdialog.h>
++#include <qaction.h>
++#include <qpopupmenu.h>
+ 				
+ #include <vector>
+ #include <dcopclient.h>		
+@@ -54,7 +56,7 @@
+ 	void updateGradient();
+ 	
+ 	void wheelEvent ( QWheelEvent * e );
+-	void keyReleaseEvent ( QKeyEvent * e );
++	void contextMenuEvent(QContextMenuEvent *event);
+ 	void mouseMoveEvent( QMouseEvent *e );
+ 	void closeEvent( QCloseEvent* ce );
+ 			
+@@ -71,7 +73,7 @@
+ 	//vector to store static labels
+ 	std::vector<AKLabelCommand*> labelsStatic;
+ 	
+-	QPushButton *setupButton;
++	QPopupMenu* contextMenu;
+ 	DCOPClient* dcopClient;
+ 	QProgressBar* progressBar;
+ 	QLabel *cdcover, *gradient, *themeHint;
+@@ -78,4 +80,4 @@
+ 	QPixmap cdimagePixmap, reflectionPixmap, gradientPixmap;
+-	QTimer* timer, *hintTimer;
++	QTimer* timer, *hintTimer, *mouseTimer;
+ 	AKLabelCommand *lInstant, *lTrack, *lStatic;
+ 	QString nowPlaying;
+@@ -88,6 +90,9 @@
+ 	void controlButtonClicked(QCString command);
+ 	void launchConfig();
+ 	void hideHint();
++	void hideMouse(bool now = TRUE);
+ 
++public:
++	QAction *reloadAct, *setupAct, *closeAct, *aboutAct;
+ };
+ 
+--- amfs-xml.cpp.orig	2007-03-11 22:55:34.000000000 +0100
++++ amfs-xml.cpp	2007-03-11 22:54:28.000000000 +0100
+@@ -3,6 +3,7 @@
+ 
+ #include <kapp.h>
+ #include <kconfig.h>
++#include <kiconloader.h>
+ 
+ #include <qfile.h>
+ #include <qdom.h>
+@@ -101,8 +102,22 @@
+ 	leftOffset = (int) (screenResX - themeWidth)/2;
+ 	topOffset = (int) (screenResY - themeHeight)/2;
+ 	
+-	//create the setup button and hide it
+-	setupButton = new QPushButton(this, "setupButton");
+-	setupButton->setText("Settings");
+-	setupButton->setGeometry(QRect(0, 0, 100, 30));
++	contextMenu = new QPopupMenu(this);
++	reloadAct = new QAction(tr("&Reload"), tr("F5"), this);
++	reloadAct->setIconSet(SmallIconSet("reload"));
++	reloadAct->setStatusTip(tr("Reload."));
++	connect(reloadAct, SIGNAL(activated()), this, SLOT(updateNextSongs()));
++	reloadAct->addTo(contextMenu);
++	setupAct = new QAction(tr("&Settings"), 0, this);
++	setupAct->setIconSet(SmallIconSet("configure"));
++	setupAct->setStatusTip(tr("Change settings."));
++	connect(setupAct, SIGNAL(activated()), this, SLOT(launchConfig()));
++	setupAct->addTo(contextMenu);
++
++	contextMenu->insertSeparator();
++	closeAct = new QAction(tr("&Quit"), tr("Esc"), this);
++	closeAct->setIconSet(SmallIconSet("exit"));
++	closeAct->setStatusTip(tr("Quit Amarok Full Screen."));
++	connect(closeAct, SIGNAL(activated()), this, SLOT(close()));
++	closeAct->addTo(contextMenu);
+ 	
+@@ -110,5 +125,5 @@
+ 	themeHint = new QLabel(this, "themeHint", 0);
+-	themeHint->setText("<- to change the settings move your mouse to the upper left corner");
+-	themeHint->setGeometry(110, 0, 650, 25);
++	themeHint->setText("To change settings do a rightclick.");
++	themeHint->setGeometry(0, 0, 650, 25);
+ 	themeHint->setPaletteForegroundColor(QColor::QColor(255, 255, 255));
+ 	themeHint->setFont(QFont::QFont("System", 13, 50, FALSE));
+@@ -335,8 +349,10 @@
+ 	hintTimer = new QTimer( this );
+ 	connect( hintTimer, SIGNAL(timeout()), this, SLOT(hideHint()) );
+ 	hintTimer->start( 5000, TRUE );
+-	
+-	connect( setupButton, SIGNAL(clicked()), this, SLOT(launchConfig()) );
++
++	mouseTimer = new QTimer( this );
++	connect( mouseTimer, SIGNAL(timeout()), this, SLOT(hideMouse()) );
++	mouseTimer->start( 5000, TRUE );
+ 	
+ 	setMouseTracking(TRUE);
+ 	
+@@ -365,26 +381,29 @@
+         return;
+ }
+ 
+-
+-void AmfsXML::keyReleaseEvent ( QKeyEvent * e ) {
+-	if(e->key() == Qt::Key_Escape) {
+-		close();
+-	}
+-}
+-
+ void AmfsXML::wheelEvent ( QWheelEvent * e ) {
+ 	if (e->delta() > 0) sendPlayerCommand("volumeUp()");
+ 	if (e->delta() < 0) sendPlayerCommand("volumeDown()");
+ }
+ 
+ void AmfsXML::mouseMoveEvent( QMouseEvent *e ) {
+-	if( (setupButton->geometry()).contains(e->pos()) ) {
+-		setupButton->show();
+-	} else setupButton->hide();
++	hideMouse(FALSE);
++	if(isEnabled()) mouseTimer->start( 5000, TRUE );
++}
++
++void AmfsXML::hideMouse(bool hide) {
++	if(hide) qApp->setOverrideCursor( QCursor( Qt::BlankCursor ) );
++	else qApp->setOverrideCursor( QCursor( Qt::ArrowCursor ) );
++}
++
++void AmfsXML::contextMenuEvent(QContextMenuEvent *event) {
++	mouseTimer->stop();
++	hideMouse(FALSE);
++	contextMenu->exec(event->globalPos());
++	connect( contextMenu, SIGNAL(aboutToHide()), this, SLOT(hideMouse()) );
+ }
+ 
+ void AmfsXML::launchConfig() {
+-	configWindow = new AmarokFS_config(this, "config", TRUE, 0);
++	configWindow = new AmarokFS_config(this, "config");
+-	configWindow->setModal(TRUE);
+ 	configWindow->show();
+ }
+@@ -393,5 +410,4 @@
+ 	themeHint->hide();
+-	setupButton->hide();
+ }
+ 
+ //reads the current trackt time and updates the progress bar
+

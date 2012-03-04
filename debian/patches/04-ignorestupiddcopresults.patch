@@ -1,0 +1,209 @@
+diff -ruN amarokfs-0.4.2.orig/amfs-xml.cpp amarokfs-0.4.2/amfs-xml.cpp
+--- amarokfs-0.4.2.orig/amfs-xml.cpp	2007-02-14 22:33:36.000000000 +0100
++++ amarokfs-0.4.2/amfs-xml.cpp	2007-02-14 22:45:54.000000000 +0100
+@@ -169,8 +169,8 @@
+ 			//parse a label that changes every track and its settings
+ 			if(akfswidget.nodeName() == "labelTrack") {
+ 				int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0, fontSize = 12, fontWeight = 50, align = 0, valign = 0;
+-				QString text = "", fontFace = "System";
+-				QCString command = "";
++				QString fontFace = "System";
++				QCString command = "", ignore = "", defaultText = "";
+ 				subnode = node.firstChild();
+ 				while ( !subnode.isNull() ) {
+ 					if ( subnode.isElement() ) {
+@@ -183,6 +183,8 @@
+ 						if(subnode.nodeName() == "fontG") g = elem.text().toInt();
+ 						if(subnode.nodeName() == "fontB") b = elem.text().toInt();
+ 						if(subnode.nodeName() == "command") command = elem.text();
++						if(subnode.nodeName() == "ignore") ignore = elem.text();
++						if(subnode.nodeName() == "defaultText") defaultText = elem.text();
+ 						if(subnode.nodeName() == "fontSize") fontSize = elem.text().toInt();
+ 						if(subnode.nodeName() == "fontWeight") fontWeight = elem.text().toInt();
+ 						if(subnode.nodeName() == "fontFace") fontFace = elem.text();
+@@ -191,11 +193,11 @@
+ 					}
+ 					subnode = subnode.nextSibling();
+ 				}
+-				lTrack = new AKLabelCommand(this, "label", command, text);
++				lTrack = new AKLabelCommand(this, "label", command, defaultText, ignore);
+ 				lTrack->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
+ 				lTrack->setPaletteForegroundColor(QColor::QColor(r, g, b));
+ 				lTrack->setFont(QFont::QFont(fontFace, fontSize, fontWeight, FALSE));
+-				lTrack->setText(text);
++				lTrack->setText(defaultText);
+ 				lTrack->setAlignment(align | valign | Qt::WordBreak);
+ 				labelsTrack.push_back(lTrack);
+ 			}
+@@ -203,8 +205,8 @@
+ 			//parse a label that changes instanteniously
+ 			if(akfswidget.nodeName() == "labelInstant") {
+ 				int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0, fontSize = 12, fontWeight = 50, align = 0, valign = 0;
+-				QString text = "", fontFace = "System";
+-				QCString command = "";
++				QString fontFace = "System";
++				QCString command = "", ignore = "", defaultText = "";
+ 				subnode = node.firstChild();
+ 				while ( !subnode.isNull() ) {
+ 					if ( subnode.isElement() ) {
+@@ -217,6 +219,8 @@
+ 						if(subnode.nodeName() == "fontG") g = elem.text().toInt();
+ 						if(subnode.nodeName() == "fontB") b = elem.text().toInt();
+ 						if(subnode.nodeName() == "command") command = elem.text();
++						if(subnode.nodeName() == "ignore") ignore = elem.text();
++						if(subnode.nodeName() == "defaultText") defaultText = elem.text();
+ 						if(subnode.nodeName() == "fontSize") fontSize = elem.text().toInt();
+ 						if(subnode.nodeName() == "fontWeight") fontWeight = elem.text().toInt();
+ 						if(subnode.nodeName() == "fontFace") fontFace = elem.text();
+@@ -225,11 +229,11 @@
+ 					}
+ 					subnode = subnode.nextSibling();
+ 				}
+-				lInstant = new AKLabelCommand(this, "label", command, text);
++				lInstant = new AKLabelCommand(this, "label", command, defaultText, ignore);
+ 				lInstant->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
+ 				lInstant->setPaletteForegroundColor(QColor::QColor(r, g, b));
+ 				lInstant->setFont(QFont::QFont(fontFace, fontSize, fontWeight, FALSE));
+-				lInstant->setText(text);
++				lInstant->setText(defaultText);
+ 				lInstant->setAlignment(align | valign | Qt::WordBreak);
+ 				labelsInstant.push_back(lInstant);
+ 			}
+@@ -427,8 +431,12 @@
+ 	for (unsigned int i=0; i<labelsTrack.size(); i++) {
+ 		QCString tempCommand = labelsTrack[i]->getCommand();
+ 		if(!tempCommand.isEmpty()) {
+-			QString newText = getDCOPDataText(tempCommand);
+-			labelsTrack[i]->setText(newText);
++			QString dcopText = getDCOPDataText(tempCommand);
++			QRegExp ignore (labelsTrack[i]->getIgnore());
++			if(ignore.exactMatch(dcopText))
++				labelsTrack[i]->setText(labelsTrack[i]->getDefaultText());
++			else
++				labelsTrack[i]->setText(dcopText);
+ 		}
+ 	}
+ 	
+@@ -438,7 +446,11 @@
+ 	for (unsigned int i=0; i<labelsInstant.size(); i++) {
+ 		QCString tempCommand = labelsInstant[i]->getCommand();
+ 		if(!tempCommand.isEmpty()) {
+-			QString newText = getDCOPDataText(tempCommand);
+-			labelsInstant[i]->setText(newText);
++			QString dcopText = getDCOPDataText(tempCommand);
++			QRegExp ignore (labelsInstant[i]->getIgnore());
++			if(ignore.exactMatch(dcopText))
++				labelsInstant[i]->setText(labelsInstant[i]->getDefaultText());
++			else
++				labelsInstant[i]->setText(dcopText);
+ 		}
+ 	}
+diff -ruN amarokfs-0.4.2.orig/label-command.cpp amarokfs-0.4.2/label-command.cpp
+--- amarokfs-0.4.2.orig/label-command.cpp	2007-02-14 22:33:36.000000000 +0100
++++ amarokfs-0.4.2/label-command.cpp	2007-02-14 22:33:53.000000000 +0100
+@@ -24,14 +24,19 @@
+ #include <qlabel.h>
+ #include <qpixmap.h>
+ #include <qimage.h>
++#include <qregexp.h>
+ #include <iostream>
+ using namespace std;
+ 
+-AKLabelCommand::AKLabelCommand(QWidget *parent, const char *name, QCString commandS, QString text)
++AKLabelCommand::AKLabelCommand(QWidget *parent, const char *name, QCString commandS, QString text, QString ignoreS)
+     : QLabel( parent, name ) {
+ 	command = commandS;
+-	setText(text);
+-}
++	ignore = ignoreS;
++	defaultText = text;	
++	if(ignore.isEmpty())
++		setText(text);
++	
++}		
+ 
+ /*
+  *  Destroys the object and frees any allocated resources
+@@ -44,3 +49,11 @@
+ QCString AKLabelCommand::getCommand() {
+ 	return command;
+ }
++
++QString AKLabelCommand::getIgnore() {
++	return ignore;
++}
++
++QString AKLabelCommand::getDefaultText() {
++	return defaultText;
++}
+diff -ruN amarokfs-0.4.2.orig/label-command.h amarokfs-0.4.2/label-command.h
+--- amarokfs-0.4.2.orig/label-command.h	2007-02-14 22:33:36.000000000 +0100
++++ amarokfs-0.4.2/label-command.h	2007-02-14 22:33:53.000000000 +0100
+@@ -5,18 +5,23 @@
+ #include <qlabel.h>
+ #include <qstring.h>
+ #include <qpixmap.h>
++#include <qregexp.h>
+ 
+ class AKLabelCommand : public QLabel
+ {
+ 	Q_OBJECT
+ 
+ public:
+-	AKLabelCommand(QWidget *parent, const char *name = 0, QCString commandS = "", QString text = "");
++	AKLabelCommand(QWidget *parent, const char *name = 0, QCString commandS = "", QString text = "", QString ignore = "");
+ 	~AKLabelCommand();
+ 	QCString getCommand();
++	QString getIgnore();
++	QString getDefaultText();
+ 
+ private:
+ 	QCString command;
++	QString ignore;
++	QString defaultText;
+ 
+ };
+ 
+diff -ruN amarokfs-0.4.2.orig/theme-howto.txt amarokfs-0.4.2/theme-howto.txt
+--- amarokfs-0.4.2.orig/theme-howto.txt	2007-02-14 22:33:36.000000000 +0100
++++ amarokfs-0.4.2/theme-howto.txt	2007-02-14 22:33:53.000000000 +0100
+@@ -24,11 +24,13 @@
+   a) "x" and "y" define the position
+   b) "w" and "h" define width and height
+   c) "command" defines the dcop-function to be called to get the text value. To see available functions run "kdcop", open amarok/player. Only function without any arguments and returning a QString can be called.
+-  d) "fontSize" (default 12) and "fontWeight" (default 50) define the font appearence;
+-  e) "fontFace" defines the font. Possible values are: Helvetica, SansSerif = Helvetica, Times, Serif = Times, Courier, TypeWriter = Courier, OldEnglish, Decorative = OldEnglish, System, AnyStyle
+-  f) "fontR", "fontG", "fontB" define the font color. The values are 0-255;
+-  g) "align" defines horizontal alignment, values are: 0 for auto, 1 for left, 2 for right, 4 for center and 5 for justify;
+-  h) "valign" defines vertical alignment, values are: 16 for top, 32 for bottom, 64 for center
++  d) "ignore" defines a regular Expression which matches these results of the dcop-call which will be ignored; more infos about the possible expressions at http://doc.trolltech.com/3.3/qregexp.html#regular-expression
++  e) "defaultText" defines the text which replaces the dcop-results matching the "ignore"-Expression
++  f) "fontSize" (default 12) and "fontWeight" (default 50) define the font appearence;
++  g) "fontFace" defines the font. Possible values are: Helvetica, SansSerif = Helvetica, Times, Serif = Times, Courier, TypeWriter = Courier, OldEnglish, Decorative = OldEnglish, System, AnyStyle
++  h) "fontR", "fontG", "fontB" define the font color. The values are 0-255;
++  i) "align" defines horizontal alignment, values are: 0 for auto, 1 for left, 2 for right, 4 for center and 5 for justify;
++  j) "valign" defines vertical alignment, values are: 16 for top, 32 for bottom, 64 for center
+ 
+ 4) The "trackInstant" Element defines a text-label similar to trackLabel. The only difference is that it changes every second. It has the same subelements as "trackLabel".
+ 
+diff -ruN amarokfs-0.4.2.orig/theme.xml amarokfs-0.4.2/theme.xml
+--- amarokfs-0.4.2.orig/theme.xml	2007-02-14 22:33:36.000000000 +0100
++++ amarokfs-0.4.2/theme.xml	2007-02-14 22:33:53.000000000 +0100
+@@ -95,6 +95,7 @@
+ 	</labelTrack>
+ 	<labelTrack>
+ 		<command>year()</command>
++		<ignore>0*</ignore>
+ 		<x>50</x>
+ 		<y>460</y>
+ 		<w>430</w>
+@@ -146,6 +147,8 @@
+ 		<valign>16</valign>
+ 	</labelStatic>
+ 	<labelInstant>
+ 		<command>totalTime()</command>
++		<ignore>\?</ignore>
++		<defaultText>--:--</defaultText>
+ 		<x>524</x>
+ 		<y>650</y>
+ 		<w>450</w> 		

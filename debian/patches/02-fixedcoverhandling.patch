@@ -1,0 +1,26 @@
+Author: Martin Kossler <martin.kossler@students.uni-marburg.de>
+Fixed behaviour when size of Cover-Preview was not set to 100px. 
+With other size-settings the naming of the cover-filename returned by the dcop call differed from the one presumed by the program, so now it uses a regex.
+
+--- amarokFS-qt3-0.4.2.orig/amfs-xml.cpp	2007-02-08 13:56:33.000000000 +0100
++++ amarokFS-qt3-0.4.2/amfs-xml.cpp	2007-02-13 16:29:22.000000000 +0100
+@@ -13,6 +13,7 @@
+ #include <stdlib.h>
+ #include <qmessagebox.h>
+ #include <qerrormessage.h>
++#include <qregexp.h>
+ 
+ using namespace std;
+ 
+@@ -493,9 +494,9 @@
+ 	//path from dcop (only 100x100px image)
+ 	QString coverPathDCOP =  getDCOPDataText("coverImage()");
+ 	//$HOME/.kde/share/apps/amarok/albumcovers/large/.... - some covers are stored here
+-	QString coverPathDCOPlarge = coverPathDCOP.replace("cache/100@", "large/");
++	QString coverPathDCOPlarge = coverPathDCOP.replace(QRegExp("cache/\\d*@"), "large/");
+ 	//$HOME/.kde/share/apps/amarok/albumcovers/tagcover/.... - and some are stored here
+-	QString coverPathDCOPtagcover = coverPathDCOP.replace("large/", "tagcover/");
++	QString coverPathDCOPtagcover = coverPathDCOP.replace(QRegExp("cache/\\d*@"), "tagcover/");
+ 	
+ 	//debug-stuff
+ 	/*cout << "dcop-large: " << coverPathDCOPlarge << "\n";

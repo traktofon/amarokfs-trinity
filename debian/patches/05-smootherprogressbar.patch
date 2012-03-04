@@ -1,0 +1,14 @@
+--- amfs-xml.cpp.orig	2007-03-01 17:43:00.000000000 +0100
++++ amfs-xml.cpp	2007-03-01 17:44:09.000000000 +0100
+@@ -399,10 +399,9 @@
+ 	//get the time and percentage
+ 	int totalTime = getDCOPDataInt("trackTotalTime()");
+ 	int currentTime = getDCOPDataInt("trackCurrentTime()");
+-	float timeperct = (float)currentTime/(float)totalTime*100;
+ 	
+ 	//if there is an initialized progress bar then we have to update it
+-	if(progressBar != (QProgressBar *) 0) progressBar->setProgress( (int)timeperct );
++	if(progressBar != (QProgressBar *) 0) progressBar->setProgress( currentTime, totalTime);
+ 	
+ 	//update all labels that have to be updated instantaniously 
+ 	updateInstantLabels();

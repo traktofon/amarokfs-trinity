@@ -1,0 +1,24 @@
+diff -uNr amarokFS-qt3-0.4.2/theme-howto.txt amarokFS-qt3-0.4.2-mod/theme-howto.txt
+--- amarokFS-qt3-0.4.2/theme-howto.txt	2007-02-11 18:57:38.000000000 +0200
++++ amarokFS-qt3-0.4.2-mod/theme-howto.txt	2007-02-11 18:58:09.000000000 +0200
+@@ -20,7 +20,7 @@
+   d) "clicked" defines the path to the image to be displayed you press the button
+   e) "command" defines the dcop-function to be called. To see available functions run "kdcop", open amarok/player. Only function without any arguments can be called.
+   
+-3) The "trackLabel" Element defines a text-label. Its contet changes with every track change. It has folowing subelements:
++3) The "labelTrack" Element defines a text-label. Its contet changes with every track change. It has folowing subelements:
+   a) "x" and "y" define the position
+   b) "w" and "h" define width and height
+   c) "command" defines the dcop-function to be called to get the text value. To see available functions run "kdcop", open amarok/player. Only function without any arguments and returning a QString can be called.
+@@ -30,9 +30,9 @@
+   g) "align" defines horizontal alignment, values are: 0 for auto, 1 for left, 2 for right, 4 for center and 5 for justify;
+   h) "valign" defines vertical alignment, values are: 16 for top, 32 for bottom, 64 for center
+ 
+-4) The "trackInstant" Element defines a text-label similar to trackLabel. The only difference is that it changes every second. It has the same subelements as "trackLabel".
++4) The "labelInstant" Element defines a text-label similar to trackLabel. The only difference is that it changes every second. It has the same subelements as "labelTrack".
+ 
+-5) The "trackStatic" Element defines a text-label similar to trackLabel. The only difference is that it never changes. It has the same subelements as "trackLabel" except:
++5) The "labelStatic" Element defines a text-label similar to trackLabel. The only difference is that it never changes. It has the same subelements as "labelTrack" except:
+   a) "text" determines the content (and "command" is ignored)
+ 
+ 4) The "progressbar" element - only one can be used, subelements:

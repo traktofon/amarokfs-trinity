@@ -1,6 +1,8 @@
 #include "amfs-xml.h"
 #include "amarokfs_config.h"
 
+#define COVERSIZE (500)
+
 #include <kapp.h>
 #include <kconfig.h>
 #include <kiconloader.h>
@@ -336,7 +338,7 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 				cdcoverImage.load( "images/logo.png");
 				cdimagePixmap = cdcoverImage;
 				cdcover->setPixmap(cdimagePixmap);
-				cdcover->resize(300, 300);
+				cdcover->resize(COVERSIZE, COVERSIZE);
 				cdcover->move(x + leftOffset, y + topOffset);
 				cdcoverPosX = x + leftOffset;
 				cdcoverPosY = y + topOffset;
@@ -577,11 +579,11 @@ void AmfsXML::updateCover() {
 	QImage cdcoverImage;
 	
 	cdcoverImage = getCoverPath(currentArtist, currentAlbum);
-	cdcoverImage = cdcoverImage.smoothScale(300, 300, QImage::ScaleMin);
+	cdcoverImage = cdcoverImage.smoothScale(COVERSIZE, COVERSIZE, QImage::ScaleMin);
 		
 	cdimagePixmap = cdcoverImage;
 	cdcover->setPixmap(cdimagePixmap);
-	cdcover->move(cdcoverPosX,cdcoverPosY + 300 - cdimagePixmap.height());
+	cdcover->move(cdcoverPosX,cdcoverPosY + COVERSIZE - cdimagePixmap.height());
 	cdcover->resize(cdimagePixmap.width(), cdimagePixmap.height());
 }
 
@@ -591,7 +593,7 @@ void AmfsXML::updateGradient() {
 	QImage cdReflected;
 	
 	cdReflected = getCoverPath(currentArtist, currentAlbum, TRUE);
-	cdReflected = cdReflected.smoothScale(300, 300, QImage::ScaleMin);
+	cdReflected = cdReflected.smoothScale(COVERSIZE, COVERSIZE, QImage::ScaleMin);
 	
 	cdReflected = cdReflected.mirror(FALSE, TRUE);
 	reflectionPixmap = cdReflected;
@@ -671,9 +673,9 @@ QImage AmfsXML::getCoverPath(QString artist, QString album, bool transDef) {
 	QString coverPathDCOPtagcover = coverPathDCOP.replace(QRegExp("cache/\\d*@"), "tagcover/");
 	
 	//debug-stuff
-	cout << "dcop-large: " << coverPathDCOPlarge << "\n";
+	/*cout << "dcop-large: " << coverPathDCOPlarge << "\n";
 	cout << "dcop-tagcover: " << coverPathDCOPtagcover << "\n";
-	cout << "sql: " << coverPathSQL << "\n";
+	cout << "sql: " << coverPathSQL << "\n";*/
 	
 	QImage result = (QImage) 0;
 	result.load(coverPathDCOPlarge);

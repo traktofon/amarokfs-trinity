@@ -19,21 +19,21 @@
 */
 
 #include "cb.h"
-#include <qstring.h>
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qpixmap.h>
-#include <qimage.h>
+#include <tqstring.h>
+#include <tqwidget.h>
+#include <tqlabel.h>
+#include <tqpixmap.h>
+#include <tqimage.h>
 #include <iostream>
 using namespace std;
 
-AKControlButton::AKControlButton(QWidget *parent, const char *name, const QString &fileNameN, const QString &fileNameC, QCString commandS)
-    : QLabel( parent, name ) {
+AKControlButton::AKControlButton(TQWidget *parent, const char *name, const TQString &fileNameN, const TQString &fileNameC, TQCString commandS)
+    : TQLabel( parent, name ) {
 	setNormal(fileNameN);
 	if(!fileNameC.isEmpty()) setClicked(fileNameC);
 	else setClicked(fileNameN);
 	command = commandS;
-	//path = new QString("aaa");
+	//path = new TQString("aaa");
 }
 
 /*
@@ -41,18 +41,18 @@ AKControlButton::AKControlButton(QWidget *parent, const char *name, const QStrin
  */
 AKControlButton::~AKControlButton()
 {
-    // no need to delete child widgets, Qt does it all for us
+    // no need to delete child widgets, TQt does it all for us
 }
 
-void AKControlButton::setNormal(const QString & fileName) {
-	QImage tempImg;
+void AKControlButton::setNormal(const TQString & fileName) {
+	TQImage tempImg;
 	tempImg.load( fileName);
 	normal = tempImg;
 	wasReleased();
 }
 
-void AKControlButton::setClicked(const QString & fileName) {
-	QImage tempImg;
+void AKControlButton::setClicked(const TQString & fileName) {
+	TQImage tempImg;
 	tempImg.load( fileName);
 	clicked = tempImg;
 	//setPixmap(normal);
@@ -65,7 +65,7 @@ void AKControlButton::wasClicked() {
 void AKControlButton::wasReleased() {
 	setPixmap(normal);
 }
-void AKControlButton::mouseReleaseEvent( QMouseEvent *e )
+void AKControlButton::mouseReleaseEvent( TQMouseEvent *e )
 {
 	if((rect()).contains(e->pos())) {
 		wasReleased();
@@ -73,14 +73,14 @@ void AKControlButton::mouseReleaseEvent( QMouseEvent *e )
 	}
 }
 
-void AKControlButton::mouseMoveEvent( QMouseEvent *e )
+void AKControlButton::mouseMoveEvent( TQMouseEvent *e )
 {
 	if(!( (rect()).contains(e->pos()) )) {
 		wasReleased();
 	}
 }
 
-void AKControlButton::mousePressEvent( QMouseEvent *e )
+void AKControlButton::mousePressEvent( TQMouseEvent *e )
 {
 	if((rect()).contains(e->pos())) {
 		setPixmap(clicked);

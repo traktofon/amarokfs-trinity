@@ -1,34 +1,34 @@
 #ifndef CB_H
 #define CB_H
 
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpixmap.h>
+#include <tqwidget.h>
+#include <tqlabel.h>
+#include <tqstring.h>
+#include <tqpixmap.h>
 
-class AKControlButton : public QLabel
+class AKControlButton : public TQLabel
 {
-	Q_OBJECT
+	TQ_OBJECT
 
 public:
-	AKControlButton(QWidget *parent, const char *name = 0, const QString &fileNameN = "", const QString &fileNameC = "", QCString commandS = "");
+	AKControlButton(TQWidget *parent, const char *name = 0, const TQString &fileNameN = "", const TQString &fileNameC = "", TQCString commandS = "");
 	~AKControlButton();
-	void setNormal(const QString & fileName);
-	void setClicked(const QString & fileName);
+	void setNormal(const TQString & fileName);
+	void setClicked(const TQString & fileName);
 
 private:
-	void mouseReleaseEvent( QMouseEvent *e );
-	void mousePressEvent( QMouseEvent *e );
-	void mouseMoveEvent( QMouseEvent *e );
+	void mouseReleaseEvent( TQMouseEvent *e );
+	void mousePressEvent( TQMouseEvent *e );
+	void mouseMoveEvent( TQMouseEvent *e );
 
 	void wasClicked();
 	void wasReleased();
 
-	QCString command;
-	QPixmap normal, clicked;
+	TQCString command;
+	TQPixmap normal, clicked;
 
 signals:
-	void clickedB(QCString);
+	void clickedB(TQCString);
 
 };
 

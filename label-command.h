@@ -1,27 +1,27 @@
 #ifndef LABEL_COMMAND_H
 #define LABEL_COMMAND_H
 
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qregexp.h>
+#include <tqwidget.h>
+#include <tqlabel.h>
+#include <tqstring.h>
+#include <tqpixmap.h>
+#include <tqregexp.h>
 
-class AKLabelCommand : public QLabel
+class AKLabelCommand : public TQLabel
 {
-	Q_OBJECT
+	TQ_OBJECT
 
 public:
-	AKLabelCommand(QWidget *parent, const char *name = 0, QCString commandS = "", QString text = "", QString ignore = "");
+	AKLabelCommand(TQWidget *parent, const char *name = 0, TQCString commandS = "", TQString text = "", TQString ignore = "");
 	~AKLabelCommand();
-	QCString getCommand();
-	QString getIgnore();
-	QString getDefaultText();
+	TQCString getCommand();
+	TQString getIgnore();
+	TQString getDefaultText();
 
 private:
-	QCString command;
-	QString ignore;
-	QString defaultText;
+	TQCString command;
+	TQString ignore;
+	TQString defaultText;
 
 };
 

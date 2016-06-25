@@ -19,18 +19,18 @@
 */
 
 #include "label-pixmap.h"
-#include <qstring.h>
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qpixmap.h>
-#include <qimage.h>
+#include <tqstring.h>
+#include <tqwidget.h>
+#include <tqlabel.h>
+#include <tqpixmap.h>
+#include <tqimage.h>
 #include <iostream>
 using namespace std;
 
-AKLabelPixmap::AKLabelPixmap(QWidget *parent, const char *name, QString path)
-    : QLabel( parent, name ) {
+AKLabelPixmap::AKLabelPixmap(TQWidget *parent, const char *name, TQString path)
+    : TQLabel( parent, name ) {
 	picturePath = path;
-	QImage tmpImg;
+	TQImage tmpImg;
 	tmpImg.load(picturePath);
 	picturePixmap = tmpImg;
 	setPixmap(picturePixmap);
@@ -41,5 +41,5 @@ AKLabelPixmap::AKLabelPixmap(QWidget *parent, const char *name, QString path)
  */
 AKLabelPixmap::~AKLabelPixmap()
 {
-    // no need to delete child widgets, Qt does it all for us
+    // no need to delete child widgets, TQt does it all for us
 } 

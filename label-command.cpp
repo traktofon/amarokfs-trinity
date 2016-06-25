@@ -19,17 +19,17 @@
 */
 
 #include "label-command.h"
-#include <qstring.h>
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qregexp.h>
+#include <tqstring.h>
+#include <tqwidget.h>
+#include <tqlabel.h>
+#include <tqpixmap.h>
+#include <tqimage.h>
+#include <tqregexp.h>
 #include <iostream>
 using namespace std;
 
-AKLabelCommand::AKLabelCommand(QWidget *parent, const char *name, QCString commandS, QString text, QString ignoreS)
-    : QLabel( parent, name ) {
+AKLabelCommand::AKLabelCommand(TQWidget *parent, const char *name, TQCString commandS, TQString text, TQString ignoreS)
+    : TQLabel( parent, name ) {
 	command = commandS;
 	ignore = ignoreS;
 	defaultText = text;	
@@ -43,17 +43,17 @@ AKLabelCommand::AKLabelCommand(QWidget *parent, const char *name, QCString comma
  */
 AKLabelCommand::~AKLabelCommand()
 {
-    // no need to delete child widgets, Qt does it all for us
+    // no need to delete child widgets, TQt does it all for us
 } 
 
-QCString AKLabelCommand::getCommand() {
+TQCString AKLabelCommand::getCommand() {
 	return command;
 }
 
-QString AKLabelCommand::getIgnore() {
+TQString AKLabelCommand::getIgnore() {
 	return ignore;
 }
 
-QString AKLabelCommand::getDefaultText() {
+TQString AKLabelCommand::getDefaultText() {
 	return defaultText;
 }

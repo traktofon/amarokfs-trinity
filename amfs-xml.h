@@ -7,49 +7,49 @@
 #include "amarokfs_config.h"
 #include "label-pixmap.h"
 		
-#include <qdom.h>
-#include <qwidget.h>
-#include <qpushbutton.h>
-#include <qvariant.h>
-#include <qprogressbar.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-#include <qapplication.h>
-#include <qtimer.h>
-#include <qstring.h>
-#include <qimage.h>
-#include <qdialog.h>
-#include <qaction.h>
-#include <qpopupmenu.h>
-#include <kaboutapplication.h>
+#include <tqdom.h>
+#include <tqwidget.h>
+#include <tqpushbutton.h>
+#include <tqvariant.h>
+#include <tqprogressbar.h>
+#include <tqlabel.h>
+#include <tqlayout.h>
+#include <tqtooltip.h>
+#include <tqwhatsthis.h>
+#include <tqapplication.h>
+#include <tqtimer.h>
+#include <tqstring.h>
+#include <tqimage.h>
+#include <tqdialog.h>
+#include <tqaction.h>
+#include <tqpopupmenu.h>
+#include <tdeaboutapplication.h>
 				
 #include <vector>
 #include <dcopclient.h>		
 #include <iostream>
 		
 	
-class AmfsXML : public QWidget
+class AmfsXML : public TQWidget
 {
-	Q_OBJECT
+	TQ_OBJECT
 
 public:
-	AmfsXML( QWidget* parent = 0, const char* name = 0, WFlags fl = 0 );
+	AmfsXML( TQWidget* parent = 0, const char* name = 0, WFlags fl = 0 );
 	~AmfsXML();
 
  private:
-	QDomDocument domTree;
+	TQDomDocument domTree;
 	AKControlButton *cb;
-	QLabel *b;
-	QPushButton* pushButton1;
+	TQLabel *b;
+	TQPushButton* pushButton1;
 
 private:
-	QString getDCOPDataText(QCString func);
-	QStringList getDCOPDataSQL(QString query);
-	int getDCOPDataInt(QCString func);
-	void sendPlayerCommand(QCString command);
-	QImage getCoverPath(QString artist, QString album, bool transDef=FALSE);
+	TQString getDCOPDataText(TQCString func);
+	TQStringList getDCOPDataSQL(TQString query);
+	int getDCOPDataInt(TQCString func);
+	void sendPlayerCommand(TQCString command);
+	TQImage getCoverPath(TQString artist, TQString album, bool transDef=FALSE);
 	void restoreScreenSaver();
 	void restoreAmarokOSD();
 	
@@ -58,10 +58,10 @@ private:
 	void updateCover();
 	void updateGradient();
 	
-	void wheelEvent ( QWheelEvent * e );
-	void contextMenuEvent(QContextMenuEvent *event);
-	void mouseMoveEvent( QMouseEvent *e );
-	void closeEvent( QCloseEvent* ce );
+	void wheelEvent ( TQWheelEvent * e );
+	void contextMenuEvent(TQContextMenuEvent *event);
+	void mouseMoveEvent( TQMouseEvent *e );
+	void closeEvent( TQCloseEvent* ce );
 			
 			
 	int topOffset, leftOffset;
@@ -80,18 +80,18 @@ private:
 		//vector to store pixmap labels
 	std::vector<AKLabelPixmap*> labelsPixmap;
 	
-	QPopupMenu* contextMenu;
+	TQPopupMenu* contextMenu;
 	DCOPClient* dcopClient;
-	QProgressBar* progressBar;
-	QLabel *cdcover, *gradient, *themeHint;
+	TQProgressBar* progressBar;
+	TQLabel *cdcover, *gradient, *themeHint;
 	int cdcoverPosX, cdcoverPosY;
-	QPixmap cdimagePixmap, reflectionPixmap, gradientPixmap;
-	QTimer* timer, *hintTimer, *mouseTimer;
+	TQPixmap cdimagePixmap, reflectionPixmap, gradientPixmap;
+	TQTimer* timer, *hintTimer, *mouseTimer;
 	AKLabelCommand *lInstant, *lTrack, *lStatic;
 	AKLabelPixmap *lPixmap;
-	QString nowPlaying;
-	QString nextSongIntroduction, nextSongFormat;
-	QLabel *nextSongs;
+	TQString nowPlaying;
+	TQString nextSongIntroduction, nextSongFormat;
+	TQLabel *nextSongs;
 	int nextSongCount;
 	
 	AmarokFS_config *configWindow;
@@ -100,15 +100,15 @@ private:
 private slots:
 	void updateTime();
 	void updateNextSongs();
-	void controlButtonClicked(QCString command);
+	void controlButtonClicked(TQCString command);
 	void launchConfig();
 	void launchAbout();
 	void hideHint();
 	void hideMouse(bool now = TRUE);
 
 public:
-	QAction *reloadAct, *setupAct, *closeAct, *aboutAct;
-	KAboutApplication* aboutWindow;
+	TQAction *reloadAct, *setupAct, *closeAct, *aboutAct;
+	TDEAboutApplication* aboutWindow;
 };
 
 #endif

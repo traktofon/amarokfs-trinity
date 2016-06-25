@@ -3,12 +3,9 @@ TARGET		= amarokFS
 
 CONFIG		+= qt warn_on release
 
-INCLUDEPATH += /usr/include/kde
-INCLUDEPATH += /usr/local/include/kde
-INCLUDEPATH += /usr/include
-INCLUDEPATH += /opt/kde3/include 
-INCLUDEPATH += /opt/kde/include
-INCLUDEPATH += /usr/kde/3.5/include
+INCLUDEPATH += /usr/include/tqt
+INCLUDEPATH += /usr/share/tqt3/include
+INCLUDEPATH += /opt/trinity/include
 		
 				
 HEADERS	= amfs-xml.h \
@@ -24,13 +21,12 @@ SOURCES	= main.cpp \
 	amarokfs_config.cpp \
 	label-pixmap.cpp
 
-LIBS += -lkdecore
-LIBS += -L/opt/kde3/lib
-LIBS += -L/usr/local/kde3/lib
-LIBS += -L/usr/lib/qt3
-LIBS += -L/opt/kde/lib
-LIBS += -L/usr/kde/3.5/lib
-LIBS += -lkio
+LIBS += -L/usr/share/tqt3/lib
+LIBS += -L/opt/trinity/lib
+LIBS += -ltdecore
+LIBS += -ltdeio
+LIBS += -lDCOP
+LIBS += -ltdeui
 		
 images.path = /usr/share/amarokFS/images
 images.files = images/*

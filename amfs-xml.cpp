@@ -4,31 +4,31 @@
 #define COVERSIZE (500)
 
 #include <kapp.h>
-#include <kconfig.h>
+#include <tdeconfig.h>
 #include <kiconloader.h>
-#include <qiconset.h>
+#include <tqiconset.h>
 
-#include <qfile.h>
-#include <qdom.h>
-#include <qwidget.h>
-#include <qdialog.h>
+#include <tqfile.h>
+#include <tqdom.h>
+#include <tqwidget.h>
+#include <tqdialog.h>
 #include <vector>
 #include <iostream>
 #include <stdlib.h>
-#include <qmessagebox.h>
-#include <qerrormessage.h>
-#include <qregexp.h>
+#include <tqmessagebox.h>
+#include <tqerrormessage.h>
+#include <tqregexp.h>
 
 using namespace std;
 
 		
-AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
-    : QWidget( parent, name, fl ) {
+AmfsXML::AmfsXML( TQWidget* parent, const char* name, WFlags fl )
+    : TQWidget( parent, name, fl ) {
 	
 	
-	progressBar = (QProgressBar *) 0;
-	cdcover = (QLabel *) 0;
-	gradient = (QLabel *) 0;
+	progressBar = (TQProgressBar *) 0;
+	cdcover = (TQLabel *) 0;
+	gradient = (TQLabel *) 0;
 	
 	//read the setting whether the user wants to disable the screensaver
 	kapp->config()->setGroup ("Settings");
@@ -38,32 +38,32 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 	
 	//load the path from user theme
 	kapp->config()->setGroup ("Theme");
-	QString themeCustomPath = kapp->config()->readEntry ("KUrl", "");
+	TQString themeCustomPath = kapp->config()->readEntry ("KUrl", "");
 	//strip the filename to get the directory containing the file
-	QString themeCustomPrepath = themeCustomPath;
-	themeCustomPrepath.replace(QFileInfo(themeCustomPath).fileName(), "");
+	TQString themeCustomPrepath = themeCustomPath;
+	themeCustomPrepath.replace(TQFileInfo(themeCustomPath).fileName(), "");
 	
 	//cout << themeCustomPath << "\n";
 	//cout << themeCustomPrepath << "\n";
 	
 	//set the default path
-	QString themePath = "/usr/share/amarokFS/theme.xml";
+	TQString themePath = "/usr/share/amarokFS/theme.xml";
 	//default prepath for the images directory	
-	QString themeImagesPrePath = "/usr/share/amarokFS/";
+	TQString themeImagesPrePath = "/usr/share/amarokFS/";
 		
 	//if the custom theme file exists, use it, otherwise use the default theme
-	if(QFile(themeCustomPath).exists()) {
+	if(TQFile(themeCustomPath).exists()) {
 		themePath = themeCustomPath;
 		themeImagesPrePath = themeCustomPrepath;
 		
 	}
 	cout << "Using skin: " << themePath << "\n";
 	
-	QFile opmlFile( themePath );
+	TQFile opmlFile( themePath );
 	if ( !opmlFile.open( IO_ReadOnly ) ) {
 		cout << "Critical Error\n";
 		cout << "Cannot open file \n";
-		QMessageBox::critical( 0, "amarokFS", "The theme file is not readable.\nPlease select a new theme \nand start the application again.");
+		TQMessageBox::critical( 0, "amarokFS", "The theme file is not readable.\nPlease select a new theme \nand start the application again.");
 		launchConfig();
 		close();
 	
@@ -73,14 +73,14 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 		cout << "Critical Error\n";
 		cout << "Cannot parse file \n";
 		opmlFile.close();
-		QMessageBox::critical( 0, "amarokFS", "The theme file is broken.\nPlease select a new theme \nand start the application again.");
+		TQMessageBox::critical( 0, "amarokFS", "The theme file is broken.\nPlease select a new theme \nand start the application again.");
 		launchConfig();
 		close();
 	}
 	opmlFile.close();
 	
 	//parse the document
-	QDomElement root = domTree.documentElement();
+	TQDomElement root = domTree.documentElement();
 	
 	//get the theme resolution and background color
 	int themeWidth = 0, themeHeight = 0, bgcolorR = 0, bgcolorG = 0, bgcolorB = 0;
@@ -96,11 +96,11 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 		bgcolorG = root.attributeNode("bgcolorG").nodeValue().toInt();
 	if( root.hasAttribute("bgcolorB")) 
 		bgcolorB = root.attributeNode("bgcolorB").nodeValue().toInt();
-	setPaletteBackgroundColor(QColor(bgcolorR, bgcolorG, bgcolorB));
+	setPaletteBackgroundColor(TQColor(bgcolorR, bgcolorG, bgcolorB));
 	
 	//get the screen resolution:
 	int screenResX, screenResY;
-	QDesktopWidget desktop;
+	TQDesktopWidget desktop;
 	screenResX = desktop.screenGeometry(this).width();
 	screenResY = desktop.screenGeometry(this).height();
 		
@@ -108,40 +108,40 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 	leftOffset = (int) (screenResX - themeWidth)/2;
 	topOffset = (int) (screenResY - themeHeight)/2;
 	
-	contextMenu = new QPopupMenu(this);
-	reloadAct = new QAction(tr("&Reload"), tr("F5"), this);
+	contextMenu = new TQPopupMenu(this);
+	reloadAct = new TQAction(tr("&Reload"), tr("F5"), this);
 	reloadAct->setIconSet(SmallIconSet("reload"));
 	reloadAct->setStatusTip(tr("Reload."));
 	connect(reloadAct, SIGNAL(activated()), this, SLOT(updateNextSongs()));
 	reloadAct->addTo(contextMenu);
-	setupAct = new QAction(tr("&Settings"), 0, this);
+	setupAct = new TQAction(tr("&Settings"), 0, this);
 	setupAct->setIconSet(SmallIconSet("configure"));
 	setupAct->setStatusTip(tr("Change settings."));
 	connect(setupAct, SIGNAL(activated()), this, SLOT(launchConfig()));
 	setupAct->addTo(contextMenu);
 
 	contextMenu->insertSeparator();
-	aboutAct = new QAction(tr("&About"), 0, this);
-	aboutAct->setIconSet(QIconSet(QPixmap("/usr/share/icons/amarokFS.png")));
+	aboutAct = new TQAction(tr("&About"), 0, this);
+	aboutAct->setIconSet(TQIconSet(TQPixmap("/usr/share/icons/amarokFS.png")));
 	aboutAct->setStatusTip(tr("Show About Dialog."));
 	connect(aboutAct, SIGNAL(activated()), this, SLOT(launchAbout()));
 	aboutAct->addTo(contextMenu);
-	closeAct = new QAction(tr("&Quit"), tr("Esc"), this);
+	closeAct = new TQAction(tr("&Quit"), tr("Esc"), this);
 	closeAct->setIconSet(SmallIconSet("exit"));
 	closeAct->setStatusTip(tr("Quit Amarok Full Screen."));
 	connect(closeAct, SIGNAL(activated()), this, SLOT(close()));
 	closeAct->addTo(contextMenu);
 	
 	if(!isSetDisThemeHint) {
-	themeHint = new QLabel(this, "themeHint", 0);
+	themeHint = new TQLabel(this, "themeHint", 0);
 	themeHint->setText("To change settings do a rightclick.");
 	themeHint->setGeometry(0, 0, 650, 25);
-	themeHint->setPaletteForegroundColor(QColor::QColor(255, 255, 255));
-	themeHint->setFont(QFont::QFont("System", 13, 50, FALSE));
+	themeHint->setPaletteForegroundColor(TQColor(255, 255, 255));
+	themeHint->setFont(TQFont("System", 13, 50, FALSE));
 	}
 	
-	QDomNode node, subnode;
-	QDomElement akfswidget;
+	TQDomNode node, subnode;
+	TQDomElement akfswidget;
 	node = root.firstChild();
 	
 	//parse the document
@@ -153,12 +153,12 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 			//parse a button and its settings
 			if(akfswidget.nodeName() == "button") {
 				int x = 0, y = 0, w = 0, h = 0;
-				QString clicked = "", path = "";
-				QCString command = "";
+				TQString clicked = "", path = "";
+				TQCString command = "";
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 						if(subnode.nodeName() == "w") w = elem.text().toInt();
@@ -170,8 +170,8 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 					subnode = subnode.nextSibling();
 				}
 				cb = new AKControlButton(this, "button", path, clicked, command);
-				cb->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
-				connect(cb, SIGNAL(clickedB(QCString)), this, SLOT(controlButtonClicked(QCString)));
+				cb->setGeometry(TQRect(x + leftOffset, y + topOffset, w, h));
+				connect(cb, SIGNAL(clickedB(TQCString)), this, SLOT(controlButtonClicked(TQCString)));
 				controlButtons.push_back(cb);
 			}
 			
@@ -181,7 +181,7 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 						if(subnode.nodeName() == "w") w = elem.text().toInt();
@@ -189,20 +189,20 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 					}
 					subnode = subnode.nextSibling();
 				}
-				progressBar = new QProgressBar(this, "progressbar");
+				progressBar = new TQProgressBar(this, "progressbar");
 				progressBar->setPercentageVisible(FALSE);
-				progressBar->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
+				progressBar->setGeometry(TQRect(x + leftOffset, y + topOffset, w, h));
 			}
 			
 			//parse a label that changes every track and its settings
 			if(akfswidget.nodeName() == "labelTrack") {
 				int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0, fontSize = 12, fontWeight = 50, align = 0, valign = 0;
-				QString fontFace = "System";
-				QCString command = "", ignore = "", defaultText = "";
+				TQString fontFace = "System";
+				TQCString command = "", ignore = "", defaultText = "";
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 						if(subnode.nodeName() == "w") w = elem.text().toInt();
@@ -222,23 +222,23 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 					subnode = subnode.nextSibling();
 				}
 				lTrack = new AKLabelCommand(this, "label", command, defaultText, ignore);
-				lTrack->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
-				lTrack->setPaletteForegroundColor(QColor::QColor(r, g, b));
-				lTrack->setFont(QFont::QFont(fontFace, fontSize, fontWeight, FALSE));
+				lTrack->setGeometry(TQRect(x + leftOffset, y + topOffset, w, h));
+				lTrack->setPaletteForegroundColor(TQColor(r, g, b));
+				lTrack->setFont(TQFont(fontFace, fontSize, fontWeight, FALSE));
 				lTrack->setText(defaultText);
-				lTrack->setAlignment(align | valign | Qt::WordBreak);
+				lTrack->setAlignment(align | valign | TQt::WordBreak);
 				labelsTrack.push_back(lTrack);
 			}
 			
 			//parse a label that changes instanteniously
 			if(akfswidget.nodeName() == "labelInstant") {
 				int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0, fontSize = 12, fontWeight = 50, align = 0, valign = 0;
-				QString fontFace = "System";
-				QCString command = "", ignore = "", defaultText = "";
+				TQString fontFace = "System";
+				TQCString command = "", ignore = "", defaultText = "";
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 						if(subnode.nodeName() == "w") w = elem.text().toInt();
@@ -258,23 +258,23 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 					subnode = subnode.nextSibling();
 				}
 				lInstant = new AKLabelCommand(this, "label", command, defaultText, ignore);
-				lInstant->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
-				lInstant->setPaletteForegroundColor(QColor::QColor(r, g, b));
-				lInstant->setFont(QFont::QFont(fontFace, fontSize, fontWeight, FALSE));
+				lInstant->setGeometry(TQRect(x + leftOffset, y + topOffset, w, h));
+				lInstant->setPaletteForegroundColor(TQColor(r, g, b));
+				lInstant->setFont(TQFont(fontFace, fontSize, fontWeight, FALSE));
 				lInstant->setText(defaultText);
-				lInstant->setAlignment(align | valign | Qt::WordBreak);
+				lInstant->setAlignment(align | valign | TQt::WordBreak);
 				labelsInstant.push_back(lInstant);
 			}
 			
 			//parse a static label 
 			if(akfswidget.nodeName() == "labelStatic") {
 				int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0, fontSize = 12, fontWeight = 50, align = 0, valign = 0;
-				QString text = "", fontFace = "System", textString="";
-				QCString command = "";
+				TQString text = "", fontFace = "System", textString="";
+				TQCString command = "";
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 						if(subnode.nodeName() == "w") w = elem.text().toInt();
@@ -292,22 +292,22 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 					subnode = subnode.nextSibling();
 				}
 				lStatic = new AKLabelCommand(this, "label", command, textString);
-				lStatic->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
-				lStatic->setPaletteForegroundColor(QColor::QColor(r, g, b));
-				lStatic->setFont(QFont::QFont(fontFace, fontSize, fontWeight, FALSE));
+				lStatic->setGeometry(TQRect(x + leftOffset, y + topOffset, w, h));
+				lStatic->setPaletteForegroundColor(TQColor(r, g, b));
+				lStatic->setFont(TQFont(fontFace, fontSize, fontWeight, FALSE));
 				lStatic->setText(textString);
-				lStatic->setAlignment(align | valign | Qt::WordBreak);
+				lStatic->setAlignment(align | valign | TQt::WordBreak);
 				labelsStatic.push_back(lStatic);
 			}
 			
 			//parse a pixmap label 
 			if(akfswidget.nodeName() == "labelPixmap") {
 				int x = 0, y = 0, w = 0, h = 0;
-				QString path = "";
+				TQString path = "";
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 						if(subnode.nodeName() == "w") w = elem.text().toInt();
@@ -317,7 +317,7 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 					subnode = subnode.nextSibling();
 				}
 				lPixmap = new AKLabelPixmap(this, "pixmap", path);
-				lPixmap->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
+				lPixmap->setGeometry(TQRect(x + leftOffset, y + topOffset, w, h));
 				labelsPixmap.push_back(lPixmap);
 			}
 			
@@ -327,14 +327,14 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 					}
 					subnode = subnode.nextSibling();
 				}
-				cdcover = new QLabel(this, "cd-cover");
-				QImage cdcoverImage;
+				cdcover = new TQLabel(this, "cd-cover");
+				TQImage cdcoverImage;
 				cdcoverImage.load( "images/logo.png");
 				cdimagePixmap = cdcoverImage;
 				cdcover->setPixmap(cdimagePixmap);
@@ -350,18 +350,18 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 					}
 					subnode = subnode.nextSibling();
 				}
-				gradient = new QLabel(this, "gradient");
-				QImage gradientImage;
+				gradient = new TQLabel(this, "gradient");
+				TQImage gradientImage;
 				gradientImage.load( "images/gradient.png");
 				gradientPixmap = gradientImage;
 				//gradientPixmap.resize(cdimagePixmap.width(), 120);
-				gradient->setPaletteBackgroundColor(QColor(0,0,0));
+				gradient->setPaletteBackgroundColor(TQColor(0,0,0));
 				gradient->setPixmap(gradientPixmap);
 				gradient->move(x + leftOffset, y + topOffset);
 			}
@@ -369,11 +369,11 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 			//parse a list of next playing songs and its settings
 			if(akfswidget.nodeName() == "nextPlaying") {
 				int x = 0, y = 0, w = 0, h = 0, r = 0, g = 0, b = 0, fontSize = 10, fontWeight = 50, align = 0, valign = 0, trackCount = 1;
-				QString fontFace, introduction, format;
+				TQString fontFace, introduction, format;
 				subnode = node.firstChild();
 				while ( !subnode.isNull() ) {
 					if ( subnode.isElement() ) {
-						QDomElement elem = subnode.toElement();
+						TQDomElement elem = subnode.toElement();
 						if(subnode.nodeName() == "x") x = elem.text().toInt();
 						if(subnode.nodeName() == "y") y = elem.text().toInt();
 						if(subnode.nodeName() == "w") w = elem.text().toInt();
@@ -392,14 +392,14 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 					}
 					subnode = subnode.nextSibling();
 				}
-				nextSongs = new QLabel(this, "nextSong");
+				nextSongs = new TQLabel(this, "nextSong");
 				nextSongCount = trackCount;
 				nextSongIntroduction = introduction;
 				nextSongFormat = format;
-				nextSongs->setGeometry(QRect(x + leftOffset, y + topOffset, w, h));
-				nextSongs->setFont(QFont::QFont(fontFace, fontSize, fontWeight, FALSE));
-				nextSongs->setAlignment(align | valign | Qt::WordBreak);
-				nextSongs->setPaletteForegroundColor(QColor::QColor(r, g, b));
+				nextSongs->setGeometry(TQRect(x + leftOffset, y + topOffset, w, h));
+				nextSongs->setFont(TQFont(fontFace, fontSize, fontWeight, FALSE));
+				nextSongs->setAlignment(align | valign | TQt::WordBreak);
+				nextSongs->setPaletteForegroundColor(TQColor(r, g, b));
 				nextSongs->setText(introduction);
 			}
 	
@@ -412,31 +412,31 @@ AmfsXML::AmfsXML( QWidget* parent, const char* name, WFlags fl )
 	
 	//disable screensaver (if the user wants it)
         if (isSetDisScrSvr) {
-		QByteArray data;
-		QDataStream arg(data, IO_WriteOnly);
+		TQByteArray data;
+		TQDataStream arg(data, IO_WriteOnly);
 		arg << false;
 		if (!dcopClient->send("kdesktop", "KScreensaverIface", "enable(bool)", data))
-			qDebug("there was some error in disabling the KScreensaver.");
+			tqDebug("there was some error in disabling the KScreensaver.");
 	}
 	
 	//disable Amarok OSD (if the user wants it)
 	if (isSetDisAmaOSD) {
-		QByteArray data;
-		QDataStream arg(data, IO_WriteOnly);
+		TQByteArray data;
+		TQDataStream arg(data, IO_WriteOnly);
 		arg << false;
 		if (!dcopClient->send("amarok", "player", "enableOSD(bool)", data))
-			qDebug("there was some error in disabling the Amarok OSD.");
+			tqDebug("there was some error in disabling the Amarok OSD.");
 	}
 	
-	timer = new QTimer( this );
+	timer = new TQTimer( this );
 	connect( timer, SIGNAL(timeout()), this, SLOT(updateTime()) );
 	timer->start( 1000, FALSE );
 	
-	hintTimer = new QTimer( this );
+	hintTimer = new TQTimer( this );
 	connect( hintTimer, SIGNAL(timeout()), this, SLOT(hideHint()) );
 	hintTimer->start( 5000, TRUE );
 
-	mouseTimer = new QTimer( this );
+	mouseTimer = new TQTimer( this );
 	connect( mouseTimer, SIGNAL(timeout()), this, SLOT(hideMouse()) );
 	mouseTimer->start( 5000, TRUE );
 	
@@ -451,24 +451,24 @@ AmfsXML::~AmfsXML() {
 }
 
 void AmfsXML::restoreScreenSaver() {
-	QByteArray data;
-	QDataStream arg(data, IO_WriteOnly);
+	TQByteArray data;
+	TQDataStream arg(data, IO_WriteOnly);
 	arg << true;
 	if (!dcopClient->send("kdesktop", "KScreensaverIface", "enable(bool)", data)) 
-		qDebug("there was some error in enabling the KScreensaver.");
+		tqDebug("there was some error in enabling the KScreensaver.");
 	cout << "Screen saver restored\n";
 }
 
 void AmfsXML::restoreAmarokOSD() {
-	QByteArray data;
-	QDataStream arg(data, IO_WriteOnly);
+	TQByteArray data;
+	TQDataStream arg(data, IO_WriteOnly);
 	arg << true;
 	if (!dcopClient->send("amarok", "player", "enableOSD(bool)", data))
-		qDebug("there was some error in enabling the Amarok OSD.");
+		tqDebug("there was some error in enabling the Amarok OSD.");
 	cout << "Amarok OSD restored\n";
 }
 
-void AmfsXML::closeEvent( QCloseEvent* ce )
+void AmfsXML::closeEvent( TQCloseEvent* ce )
 {
 	//restore the screen saver if it was disabled
 	if(isSetDisScrSvr) restoreScreenSaver();
@@ -478,22 +478,22 @@ void AmfsXML::closeEvent( QCloseEvent* ce )
         return;
 }
 
-void AmfsXML::wheelEvent ( QWheelEvent * e ) {
+void AmfsXML::wheelEvent ( TQWheelEvent * e ) {
 	if (e->delta() > 0) sendPlayerCommand("volumeUp()");
 	if (e->delta() < 0) sendPlayerCommand("volumeDown()");
 }
 
-void AmfsXML::mouseMoveEvent( QMouseEvent *e ) {
+void AmfsXML::mouseMoveEvent( TQMouseEvent *e ) {
 	hideMouse(FALSE);
 	if(isEnabled()) mouseTimer->start( 5000, TRUE );
 }
 
 void AmfsXML::hideMouse(bool hide) {
-	if(hide) qApp->setOverrideCursor( QCursor( Qt::BlankCursor ) );
-	else qApp->setOverrideCursor( QCursor( Qt::ArrowCursor ) );
+	if(hide) tqApp->setOverrideCursor( TQCursor( TQt::BlankCursor ) );
+	else tqApp->setOverrideCursor( TQCursor( TQt::ArrowCursor ) );
 }
 
-void AmfsXML::contextMenuEvent(QContextMenuEvent *event) {
+void AmfsXML::contextMenuEvent(TQContextMenuEvent *event) {
 	mouseTimer->stop();
 	hideMouse(FALSE);
 	contextMenu->exec(event->globalPos());
@@ -522,7 +522,7 @@ void AmfsXML::updateTime() {
 	int currentTime = getDCOPDataInt("trackCurrentTime()");
 	
 	//if there is an initialized progress bar then we have to update it
-	if(progressBar != (QProgressBar *) 0) progressBar->setProgress( currentTime, totalTime);
+	if(progressBar != (TQProgressBar *) 0) progressBar->setProgress( currentTime, totalTime);
 	
 	//update all labels that have to be updated instantaniously 
 	updateInstantLabels();
@@ -536,19 +536,19 @@ void AmfsXML::updateTime() {
 		cout << getDCOPDataText("nowPlaying()") + "\n";
 		
 		//if there is a cdcover it has to be updated
-		if(cdcover != (QLabel *) 0 ) updateCover();
-		if(gradient != (QLabel *) 0 ) updateGradient();
-		if(nextSongs != (QLabel *) 0 ) updateNextSongs();
+		if(cdcover != (TQLabel *) 0 ) updateCover();
+		if(gradient != (TQLabel *) 0 ) updateGradient();
+		if(nextSongs != (TQLabel *) 0 ) updateNextSongs();
 	}
 	
 }
 
 void AmfsXML::updateTrackLabels() {
 	for (unsigned int i=0; i<labelsTrack.size(); i++) {
-		QCString tempCommand = labelsTrack[i]->getCommand();
+		TQCString tempCommand = labelsTrack[i]->getCommand();
 		if(!tempCommand.isEmpty()) {
-			QString dcopText = getDCOPDataText(tempCommand);
-			QRegExp ignore (labelsTrack[i]->getIgnore());
+			TQString dcopText = getDCOPDataText(tempCommand);
+			TQRegExp ignore (labelsTrack[i]->getIgnore());
 			if(ignore.exactMatch(dcopText))
 				labelsTrack[i]->setText(labelsTrack[i]->getDefaultText());
 			else
@@ -560,10 +560,10 @@ void AmfsXML::updateTrackLabels() {
 
 void AmfsXML::updateInstantLabels() {
 	for (unsigned int i=0; i<labelsInstant.size(); i++) {
-		QCString tempCommand = labelsInstant[i]->getCommand();
+		TQCString tempCommand = labelsInstant[i]->getCommand();
 		if(!tempCommand.isEmpty()) {
-			QString dcopText = getDCOPDataText(tempCommand);
-			QRegExp ignore (labelsInstant[i]->getIgnore());
+			TQString dcopText = getDCOPDataText(tempCommand);
+			TQRegExp ignore (labelsInstant[i]->getIgnore());
 			if(ignore.exactMatch(dcopText))
 				labelsInstant[i]->setText(labelsInstant[i]->getDefaultText());
 			else
@@ -574,12 +574,12 @@ void AmfsXML::updateInstantLabels() {
 }
 
 void AmfsXML::updateCover() {
-	QString currentArtist = getDCOPDataText("artist()") ;
-	QString currentAlbum = getDCOPDataText("album()");
-	QImage cdcoverImage;
+	TQString currentArtist = getDCOPDataText("artist()") ;
+	TQString currentAlbum = getDCOPDataText("album()");
+	TQImage cdcoverImage;
 	
 	cdcoverImage = getCoverPath(currentArtist, currentAlbum);
-	cdcoverImage = cdcoverImage.smoothScale(COVERSIZE, COVERSIZE, QImage::ScaleMin);
+	cdcoverImage = cdcoverImage.smoothScale(COVERSIZE, COVERSIZE, TQImage::ScaleMin);
 		
 	cdimagePixmap = cdcoverImage;
 	cdcover->setPixmap(cdimagePixmap);
@@ -588,17 +588,17 @@ void AmfsXML::updateCover() {
 }
 
 void AmfsXML::updateGradient() {
-	QString currentArtist = getDCOPDataText("artist()") ;
-	QString currentAlbum = getDCOPDataText("album()");
-	QImage cdReflected;
+	TQString currentArtist = getDCOPDataText("artist()") ;
+	TQString currentAlbum = getDCOPDataText("album()");
+	TQImage cdReflected;
 	
 	cdReflected = getCoverPath(currentArtist, currentAlbum, TRUE);
-	cdReflected = cdReflected.smoothScale(COVERSIZE, COVERSIZE, QImage::ScaleMin);
+	cdReflected = cdReflected.smoothScale(COVERSIZE, COVERSIZE, TQImage::ScaleMin);
 	
 	cdReflected = cdReflected.mirror(FALSE, TRUE);
 	reflectionPixmap = cdReflected;
 	
-	QImage gradientImage;
+	TQImage gradientImage;
 	gradientImage.load( "/usr/share/amarokFS/images/gradient.png");
 	gradientImage = gradientImage.scale(reflectionPixmap.width(), 120);
 	gradientPixmap = gradientImage;
@@ -609,19 +609,19 @@ void AmfsXML::updateGradient() {
 
 void AmfsXML::updateNextSongs() {
 	// Get Playlist file name and position
-	QByteArray dcopReplyData;
+	TQByteArray dcopReplyData;
 	
-	QString playlistFileName;
+	TQString playlistFileName;
 	dcopClient->call("amarok", "playlist", "saveCurrentPlaylist()",
-		(QByteArray) 0, *(new QCString) , dcopReplyData);
-	*(new QDataStream (dcopReplyData, IO_ReadOnly)) >> playlistFileName;
+		(TQByteArray) 0, *(new TQCString) , dcopReplyData);
+	*(new TQDataStream (dcopReplyData, IO_ReadOnly)) >> playlistFileName;
 
 	int playlistPosition;	
 	dcopClient->call("amarok", "playlist", "getActiveIndex()",
-		(QByteArray) 0, *(new QCString) , dcopReplyData);
-	*(new QDataStream (dcopReplyData, IO_ReadOnly)) >> playlistPosition;
+		(TQByteArray) 0, *(new TQCString) , dcopReplyData);
+	*(new TQDataStream (dcopReplyData, IO_ReadOnly)) >> playlistPosition;
 
-	QFile playlistFile( playlistFileName );
+	TQFile playlistFile( playlistFileName );
 	if ( !playlistFile.open( IO_ReadOnly ) ) {
 		cout << "Error\nCannot open playlist file \n";
 		return;
@@ -634,14 +634,14 @@ void AmfsXML::updateNextSongs() {
 	playlistFile.close();
 	
 	// Parse playlist for next songs
-	QDomElement root = domTree.documentElement();
-	QDomNode node = root.firstChild();
-	QString nextSongList = nextSongIntroduction;
+	TQDomElement root = domTree.documentElement();
+	TQDomNode node = root.firstChild();
+	TQString nextSongList = nextSongIntroduction;
 	for(int i = 0; i <= playlistPosition + nextSongCount && !node.isNull(); i++) {
 		if(i > playlistPosition && node.isElement()) {
 			// Bring information to format specified by theme
-			QString append = nextSongFormat;
-			QRegExp rx( "%(.+)%" );
+			TQString append = nextSongFormat;
+			TQRegExp rx( "%(.+)%" );
 			// Replace Placeholders			
 			rx.setMinimal(TRUE); 
 			while(rx.search(append) != -1)
@@ -654,30 +654,30 @@ void AmfsXML::updateNextSongs() {
 
 }
 
-QImage AmfsXML::getCoverPath(QString artist, QString album, bool transDef) {
-	QString coverPathQuery = "select path from images where artist='" + artist + "' and album='" + album + "'";
-	QStringList coverPath = getDCOPDataSQL(coverPathQuery);
+TQImage AmfsXML::getCoverPath(TQString artist, TQString album, bool transDef) {
+	TQString coverPathQuery = "select path from images where artist='" + artist + "' and album='" + album + "'";
+	TQStringList coverPath = getDCOPDataSQL(coverPathQuery);
 	
-	QString deviceMountPointQuery = "select lastmountpoint from devices where id=(select deviceid from images where artist='" + artist + "' and album='" + album + "')";
-	QStringList deviceMountPoint = getDCOPDataSQL(deviceMountPointQuery);
+	TQString deviceMountPointQuery = "select lastmountpoint from devices where id=(select deviceid from images where artist='" + artist + "' and album='" + album + "')";
+	TQStringList deviceMountPoint = getDCOPDataSQL(deviceMountPointQuery);
 	
 	//path - location relative within the media library
-	QString coverPathSQLMedia = coverPath.last();
+	TQString coverPathSQLMedia = coverPath.last();
 	//complete absolute path
-	QString coverPathSQL = 	deviceMountPoint.first() + coverPathSQLMedia.right(coverPathSQLMedia.length()-1);
+	TQString coverPathSQL = 	deviceMountPoint.first() + coverPathSQLMedia.right(coverPathSQLMedia.length()-1);
 	//path from dcop (only 100x100px image)
-	QString coverPathDCOP =  getDCOPDataText("coverImage()");
+	TQString coverPathDCOP =  getDCOPDataText("coverImage()");
 	//$HOME/.trinity/share/apps/amarok/albumcovers/large/.... - some covers are stored here
-	QString coverPathDCOPlarge = coverPathDCOP.replace(QRegExp("cache/\\d*@"), "large/");
+	TQString coverPathDCOPlarge = coverPathDCOP.replace(TQRegExp("cache/\\d*@"), "large/");
 	//$HOME/.trinity/share/apps/amarok/albumcovers/tagcover/.... - and some are stored here
-	QString coverPathDCOPtagcover = coverPathDCOP.replace(QRegExp("cache/\\d*@"), "tagcover/");
+	TQString coverPathDCOPtagcover = coverPathDCOP.replace(TQRegExp("cache/\\d*@"), "tagcover/");
 	
 	//debug-stuff
 	/*cout << "dcop-large: " << coverPathDCOPlarge << "\n";
 	cout << "dcop-tagcover: " << coverPathDCOPtagcover << "\n";
 	cout << "sql: " << coverPathSQL << "\n";*/
 	
-	QImage result = (QImage) 0;
+	TQImage result = (TQImage) 0;
 	result.load(coverPathDCOPlarge);
 	if (result.isNull()) {
 		result.load(coverPathSQL);
@@ -693,70 +693,70 @@ QImage AmfsXML::getCoverPath(QString artist, QString album, bool transDef) {
 	
 }
 
-void AmfsXML::controlButtonClicked(QCString command) {
+void AmfsXML::controlButtonClicked(TQCString command) {
 	sendPlayerCommand(command);
 }
 
-void AmfsXML::sendPlayerCommand(QCString command) {
-	if (!dcopClient->send("amarok", "player", command, (QByteArray) 0))
-  		qDebug("there was some error using DCOP.");
+void AmfsXML::sendPlayerCommand(TQCString command) {
+	if (!dcopClient->send("amarok", "player", command, (TQByteArray) 0))
+  		tqDebug("there was some error using DCOP.");
 	//cout << "called: " << command << "\n";
 }
 
 
-QString AmfsXML::getDCOPDataText(QCString func) {
-	QByteArray dcopCallData, dcopReplyData;
-	QCString dcopReplyType;
-	if (!dcopClient->call("amarok", "player", func, (QByteArray) 0, dcopReplyType, dcopReplyData))
-		qDebug("there was some error calling DCOP function " + func);
+TQString AmfsXML::getDCOPDataText(TQCString func) {
+	TQByteArray dcopCallData, dcopReplyData;
+	TQCString dcopReplyType;
+	if (!dcopClient->call("amarok", "player", func, (TQByteArray) 0, dcopReplyType, dcopReplyData))
+		tqDebug("there was some error calling DCOP function " + func);
 	else {
-		QDataStream reply(dcopReplyData, IO_ReadOnly);
+		TQDataStream reply(dcopReplyData, IO_ReadOnly);
 		if (dcopReplyType == "TQString") {
-			QString result;
+			TQString result;
 			reply >> result;
 			return result;
 		} else {
-			qDebug("doIt returned an unexpected type of reply!");	
-			qDebug(dcopReplyType);
+			tqDebug("doIt returned an unexpected type of reply!");	
+			tqDebug(dcopReplyType);
 		}
 	}
 	return "";
 }
 
-int AmfsXML::getDCOPDataInt(QCString func) {
-	QByteArray dcopCallData, dcopReplyData;
-	QCString dcopReplyType;
-	if (!dcopClient->call("amarok", "player", func, (QByteArray) 0, dcopReplyType, dcopReplyData))
-		qDebug("there was some error calling DCOP function " + func);
+int AmfsXML::getDCOPDataInt(TQCString func) {
+	TQByteArray dcopCallData, dcopReplyData;
+	TQCString dcopReplyType;
+	if (!dcopClient->call("amarok", "player", func, (TQByteArray) 0, dcopReplyType, dcopReplyData))
+		tqDebug("there was some error calling DCOP function " + func);
 	else {
-		QDataStream reply(dcopReplyData, IO_ReadOnly);
+		TQDataStream reply(dcopReplyData, IO_ReadOnly);
 		if (dcopReplyType == "int") {
 			int result;
 			reply >> result;
 			return result;
 		} else {
-			qDebug("doIt returned an unexpected type of reply!");	
+			tqDebug("doIt returned an unexpected type of reply!");	
 		}
 	}
 	return 0;
 }
 
-QStringList AmfsXML::getDCOPDataSQL(QString query) {
-	QByteArray dcopCallData, dcopReplyData;
-	QCString dcopReplyType;
-	QDataStream arg(dcopCallData, IO_WriteOnly);
+TQStringList AmfsXML::getDCOPDataSQL(TQString query) {
+	TQByteArray dcopCallData, dcopReplyData;
+	TQCString dcopReplyType;
+	TQDataStream arg(dcopCallData, IO_WriteOnly);
 	arg << query;
 	if (!dcopClient->call("amarok", "collection", "query(TQString)", dcopCallData, dcopReplyType, dcopReplyData))
-		qDebug("there was some error calling DCOP sql-query: " + query);
+		tqDebug("there was some error calling DCOP sql-query: " + query);
 	else {
-		QDataStream reply(dcopReplyData, IO_ReadOnly);
+		TQDataStream reply(dcopReplyData, IO_ReadOnly);
 		if (dcopReplyType == "TQStringList") {
-			QStringList result;
+			TQStringList result;
 			reply >> result;
 			return result;
 		} else {
-			qDebug("doIt returned an unexpected type of reply!");	
+			tqDebug("doIt returned an unexpected type of reply!");	
 		}
 	}
-	return (QStringList) 0;
+	return (TQStringList) 0;
 } 

@@ -10,41 +10,41 @@
 #ifndef AMAROKFS_CONFIG_H
 #define AMAROKFS_CONFIG_H
 
-#include <qvariant.h>
-#include <qlabel.h>
+#include <tqvariant.h>
+#include <tqlabel.h>
 #include <kurlrequester.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-#include <qdialog.h>
-#include <qcheckbox.h>
+#include <tqpushbutton.h>
+#include <tqlayout.h>
+#include <tqtooltip.h>
+#include <tqwhatsthis.h>
+#include <tqdialog.h>
+#include <tqcheckbox.h>
 
-class QVBoxLayout;
-class QHBoxLayout;
-class QGridLayout;
-class QSpacerItem;
-class QLabel;
+class TQVBoxLayout;
+class TQHBoxLayout;
+class TQGridLayout;
+class TQSpacerItem;
+class TQLabel;
 class KURLRequester;
-class QPushButton;
+class TQPushButton;
 
-class AmarokFS_config : public QDialog
+class AmarokFS_config : public TQDialog
 {
-    Q_OBJECT
+    TQ_OBJECT
 
 public:
-    AmarokFS_config( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 );
+    AmarokFS_config( TQWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 );
     ~AmarokFS_config();
 
 private:
-	QString themeKUrl;
-	QLabel* textLabel1, *textLabel2, *textLabel3;
+	TQString themeKUrl;
+	TQLabel* textLabel1, *textLabel2, *textLabel3;
 	KURLRequester* kURLRequester1;
-	QPushButton* okButton;
-	QPushButton* cancelButton;
-	QCheckBox *disScrSvr;
-	QCheckBox *disAmaOSD;
-	QCheckBox *disThemeHint;
+	TQPushButton* okButton;
+	TQPushButton* cancelButton;
+	TQCheckBox *disScrSvr;
+	TQCheckBox *disAmaOSD;
+	TQCheckBox *disThemeHint;
 	
 	bool isSetDisScrSvr;
 	bool isSetDisAmaOSD;
@@ -53,7 +53,7 @@ private:
 	
 private slots:
 	void saveData();
-	void dataChange(const QString & newKUrl);
+	void dataChange(const TQString & newKUrl);
 	void scrSvrChanged(int state);
 	void amaOSDChanged(int state);
 	void themeHintChanged(int state);

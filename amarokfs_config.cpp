@@ -20,17 +20,17 @@
 
 #include "amarokfs_config.h"
 
-#include <qvariant.h>
-#include <qlabel.h>
-#include <qdialog.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
+#include <tqvariant.h>
+#include <tqlabel.h>
+#include <tqdialog.h>
+#include <tqpushbutton.h>
+#include <tqlayout.h>
+#include <tqtooltip.h>
+#include <tqwhatsthis.h>
  
 		
 #include <kapp.h>
-#include <kconfig.h>
+#include <tdeconfig.h>
 #include <kurlrequester.h>
 
 #include <iostream>
@@ -40,58 +40,58 @@ using namespace std;
  *  Constructs a amarokFS_config as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.
  */
-AmarokFS_config::AmarokFS_config( QWidget* parent, const char* name, bool modal, WFlags fl )
-    : QDialog( parent, name, modal, fl )
+AmarokFS_config::AmarokFS_config( TQWidget* parent, const char* name, bool modal, WFlags fl )
+    : TQDialog( parent, name, modal, fl )
 {
 	if ( !name )
 		setName( "amarokFS_config" );
 	
 	setCaption("amarokFS Config" );
 
-	QVBoxLayout *configLayout = new QVBoxLayout( this, 11, 6, "configLayout" );
+	TQVBoxLayout *configLayout = new TQVBoxLayout( this, 11, 6, "configLayout" );
 
-	QHBoxLayout *themeLayout = new QHBoxLayout( 0, 0, 6, "themeLayout" );
-	textLabel1 = new QLabel( this, "textLabel1" );
-	textLabel1->setGeometry( QRect( 10, 10, 50, 20 ) );
+	TQHBoxLayout *themeLayout = new TQHBoxLayout( 0, 0, 6, "themeLayout" );
+	textLabel1 = new TQLabel( this, "textLabel1" );
+	textLabel1->setGeometry( TQRect( 10, 10, 50, 20 ) );
 	textLabel1->setText( "Theme:" );
 	themeLayout->addWidget(textLabel1);
 	kURLRequester1 = new KURLRequester( this, "kURLRequester1" );
-	kURLRequester1->setGeometry( QRect( 60, 0, 311, 41 ) );
+	kURLRequester1->setGeometry( TQRect( 60, 0, 311, 41 ) );
 	kURLRequester1->setFilter( "*.xml|xml Theme Files" );
 	themeLayout->addWidget( kURLRequester1 );
 	configLayout->addLayout(themeLayout);
 
-	disScrSvr = new QCheckBox(this, "disScrSvr");
+	disScrSvr = new TQCheckBox(this, "disScrSvr");
 	disScrSvr->setText("Disable screen saver");
-	disScrSvr->setGeometry( QRect(10, 40, 250, 20) );
+	disScrSvr->setGeometry( TQRect(10, 40, 250, 20) );
 	configLayout->addWidget( disScrSvr );
 	
-	disAmaOSD = new QCheckBox(this, "disAmaOSD");
+	disAmaOSD = new TQCheckBox(this, "disAmaOSD");
 	disAmaOSD->setText("Disable Amarok OSD");
-	disAmaOSD->setGeometry( QRect(10, 60, 250, 20) );
+	disAmaOSD->setGeometry( TQRect(10, 60, 250, 20) );
 	configLayout->addWidget( disAmaOSD );
 
-	disThemeHint = new QCheckBox(this, "disAmaOSD");
+	disThemeHint = new TQCheckBox(this, "disAmaOSD");
 	disThemeHint->setText("Disable hint at startup");
-	disThemeHint->setGeometry( QRect(10, 80, 250, 20) );
+	disThemeHint->setGeometry( TQRect(10, 80, 250, 20) );
 	configLayout->addWidget( disThemeHint );
 		
-	textLabel2 = new QLabel( this, "textLabel2" );
-	textLabel2->setGeometry( QRect( 10, 110, 371, 20 ) );
+	textLabel2 = new TQLabel( this, "textLabel2" );
+	textLabel2->setGeometry( TQRect( 10, 110, 371, 20 ) );
 	textLabel2->setText("New settings will be applied after restarting the application." ) ;
 	configLayout->addWidget( textLabel2 );
 
-	QHBoxLayout *buttonLayout = new QHBoxLayout( 0, 0, 6, "buttonLayout" );
-	QSpacerItem *buttonSpacer = new QSpacerItem( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	TQHBoxLayout *buttonLayout = new TQHBoxLayout( 0, 0, 6, "buttonLayout" );
+	TQSpacerItem *buttonSpacer = new TQSpacerItem( 20, 20, TQSizePolicy::Expanding, TQSizePolicy::Minimum );
 	buttonLayout->addItem( buttonSpacer );
 
-	okButton = new QPushButton( this, "ok" );
-	okButton->setGeometry( QRect( 211, 130, 80, 30 ) );
+	okButton = new TQPushButton( this, "ok" );
+	okButton->setGeometry( TQRect( 211, 130, 80, 30 ) );
 	okButton->setText( "OK" );
 	buttonLayout->addWidget( okButton );
 
-	cancelButton = new QPushButton( this, "cancel" );
-	cancelButton->setGeometry( QRect( 300, 130, 80, 30 ) );
+	cancelButton = new TQPushButton( this, "cancel" );
+	cancelButton->setGeometry( TQRect( 300, 130, 80, 30 ) );
 	cancelButton->setText( "Cancel" );
 	buttonLayout->addWidget( cancelButton );
 	
@@ -114,8 +114,8 @@ AmarokFS_config::AmarokFS_config( QWidget* parent, const char* name, bool modal,
 	clearWState( WState_Polished );
 	connect( okButton, SIGNAL(clicked()), this, SLOT(saveData()) );
 	connect( cancelButton, SIGNAL(clicked()), this, SLOT(close()) );
-	connect( kURLRequester1, SIGNAL(textChanged(const QString &)), this, SLOT(dataChange(const QString &)) );
-	connect( kURLRequester1, SIGNAL(urlSelected(const QString &)), this, SLOT(dataChange(const QString &)) );
+	connect( kURLRequester1, SIGNAL(textChanged(const TQString &)), this, SLOT(dataChange(const TQString &)) );
+	connect( kURLRequester1, SIGNAL(urlSelected(const TQString &)), this, SLOT(dataChange(const TQString &)) );
 	connect( disScrSvr, SIGNAL(stateChanged(int)), this, SLOT(scrSvrChanged(int)) );
 	connect( disAmaOSD, SIGNAL(stateChanged(int)), this, SLOT(amaOSDChanged(int)) );
 	connect( disThemeHint, SIGNAL(stateChanged(int)), this, SLOT(themeHintChanged(int)) );
@@ -132,7 +132,7 @@ void AmarokFS_config::saveData() {
 	close();
 }
 
-void AmarokFS_config::dataChange(const QString & newKUrl) {
+void AmarokFS_config::dataChange(const TQString & newKUrl) {
 	themeKUrl = newKUrl;
 }
 

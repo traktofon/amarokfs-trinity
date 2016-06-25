@@ -1,23 +1,23 @@
 #ifndef LABEL_PIXMAP_H
 #define LABEL_PIXMAP_H
 
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpixmap.h>
+#include <tqwidget.h>
+#include <tqlabel.h>
+#include <tqstring.h>
+#include <tqpixmap.h>
 
-class AKLabelPixmap : public QLabel
+class AKLabelPixmap : public TQLabel
 {
-	Q_OBJECT
+	TQ_OBJECT
 
 public:
-	AKLabelPixmap(QWidget *parent, const char *name = 0, QString path = "");
+	AKLabelPixmap(TQWidget *parent, const char *name = 0, TQString path = "");
 	~AKLabelPixmap();
 	
 
 private:
-	QString picturePath;
-	QPixmap picturePixmap;
+	TQString picturePath;
+	TQPixmap picturePixmap;
 
 };
 

@@ -1,11 +1,24 @@
-Amarok Full Screen GUI
-		 
-You need Amarok running. For any information about the player itseft, please visit amarok.kde.org
-For quit press Esc or Alt+F4
+Amarok Full Screen GUI for the Trinity Desktop Environment
+==========================================================
+
+This is an addon for the music player Amarok 1.4, in the version from the
+Trinity desktop environment (see https://www.trinitydesktop.org/),
+which started as a fork of the KDE3.5 desktop environment.
+It will most likely not work with KDE4/KDE5/... versions of Amarok.
+
+For installation instructions, see INSTALL.
+
+
+Usage
+-----
+
+You need Amarok running.
+Then simply run the binary, amarokFS.
+To quit, press Esc or Alt+F4.
 
 INSTALL:
 	
-	Executable is installed into /usr/bin, 
+	Executable is installed into /usr/local/bin, 
 	default theme + its images into /usr/share/amarokFS, 
 
 THEMES:
@@ -48,7 +61,12 @@ CHANGELOG:
 		context menu instead of settings button
 		mouse hiding
 		added amarok script 
-				
+
+        current:
+                port to the Trinity desktop environment (Frank Otto)
+                update instructions
+
+
 Copyright (C) 2007 Jan Zarnikov <jan.zarnikov@gmail.com>
 		Martin Kossler <martin.kossler@students.uni-marburg.de> 
 
@@ -67,4 +85,3 @@ Copyright (C) 2007 Jan Zarnikov <jan.zarnikov@gmail.com>
 	the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 	Boston, MA 02110-1301, USA.
 
-		

@@ -1,12 +1,28 @@
-1) Install following development packages:
+Build/Installation instructions
+===============================
 
+This has been tested with Trinity Desktop Environment TDE R14.0.3
+on Ubuntu "Trusty" 14.04.  It is assumed that TDE (or at least the
+package amarok-trinity) has been installed through the package
+manager, apt.
+
+
+1) Install the following packages:
+
+tqt3-dev-tools
 libtqt3-headers
 libtqtinterface-dev
 tdelibs14-trinity-dev
 
-2)
 
-qmake
+2) Run the following commands:
+
+tqmake
 make
-make install
+sudo make install
+
+
+Make sure that '/opt/trinity/bin' is in your PATH,
+and that '/opt/trinity/lib' is in your LD_LIBRARY_PATH.
+The 'amarokFS' binary will be located in '/usr/local/bin'.
 

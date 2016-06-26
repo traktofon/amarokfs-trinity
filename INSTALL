@@ -1,0 +1,12 @@
+1) Install following development packages:
+
+libtqt3-headers
+libtqtinterface-dev
+tdelibs14-trinity-dev
+
+2)
+
+qmake
+make
+make install
+
